@@ -56,7 +56,7 @@ I/O applications in Rust.
 In order to reach these goals as fast as possible without causing unnecessary
 ecosystem disruption, we will be taking a few steps.
 
-First, similarly to the [`futures` 0.2 release], the `tokio` crate will be
+First, similarly to the `futures` 0.2 release, the `tokio` crate will be
 transitioned to be more of a facade. Traits and types will be broken up into a
 number of sub crates and re-exported by `tokio`. Application authors will be
 able to depend directly on `tokio` while library authors will pick and choose
@@ -95,11 +95,8 @@ During this time, we'll be integrating this work to build out higher-level
 primitives in [Tower], which is being driven by the production operational needs
 of the [Conduit] project.
 
-<div style="text-align:right">&mdash;Carl Lerche</div>
-
 [reform RFC]: https://github.com/tokio-rs/tokio-rfcs/blob/master/text/0001-tokio-reform.md
 [crates.io]: https://crates.io/crates/tokio
-[`current_thread`]: {{< api-url "tokio" >}}/executor/current_thread/index.html
 [`tokio-io`]: https://github.com/tokio-rs/tokio-io
 [`futures`]: https://github.com/rust-lang-nursery/futures-rs
 [`mio`]: https://github.com/carllerche/mio

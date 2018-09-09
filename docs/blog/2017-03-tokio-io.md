@@ -173,7 +173,7 @@ like the HTTP/2.0 protocol.
 [`length_delimited::Framed`]: https://docs.rs/tokio-io/0.1/tokio_io/codec/length_delimited/struct.Framed.html
 [`LengthFieldBasedFrameDecoder`]: https://netty.io/4.0/api/io/netty/handler/codec/LengthFieldBasedFrameDecoder.html
 
-## What's next?
+## What's next
 
 All of these changes put together closes quite a large number of issues in the
 [futures] and [tokio-core] crates and we feel positions Tokio precisely where

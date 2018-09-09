@@ -38,7 +38,7 @@ The [guides] and [examples] have been updated to use the runtime.
 [guides]: https://tokio.rs/docs/getting-started/hello-world/
 [examples]: https://github.com/tokio-rs/tokio/tree/master/examples
 
-## What is the Tokio Runtime?
+## What is the Tokio Runtime
 
 The Rust asynchronous stack is evolving to a set of loosely coupled components.
 To get a basic networking application running, you need at a minimum an
@@ -81,7 +81,7 @@ I/O resources bound to the reactor are dropped.
 From within the context of a runtime. The application may spawn additional
 futures onto the thread pool using `tokio::spawn`.
 
-Alternatively, the [`Runtime`] type can be used directly. This allows for more
+Alternatively, the `Runtime` type can be used directly. This allows for more
 flexibility around setting up and using the runtime.
 
 [`Runtime`]: #
