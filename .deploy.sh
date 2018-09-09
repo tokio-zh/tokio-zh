@@ -10,6 +10,6 @@ set -e
 if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" == "master" ]]; then
   # cp CNAME docs/.vuepress/dist
   git clone https://github.com/davisp/ghp-import.git &&
-  ./ghp-import/ghp_import.py -n -p -f -m "Documentation upload" -b master -r https:/"$TOKIOZH_TOKEN"@github.com/tokio-zh/tokio-zh.github.io.git docs/.vuepress/dist &&
+  ./ghp-import/ghp_import.py -n -p -f -m "Documentation upload" -b master -r https://"$TOKIOZH_TOKEN"@github.com/tokio-zh/tokio-zh.github.io.git docs/.vuepress/dist &&
   echo "Uploaded documentation"
 fi
