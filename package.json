@@ -1,0 +1,24 @@
+{
+  "name": "tokio-zh",
+  "version": "1.0.0",
+  "description": "tokio-zh",
+  "repository": "https://github.com/tokio-zh/tokio-zh.git",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs"
+  },
+  "dependencies": {
+    "vuex": "^3.0.1",
+    "vuepress-theme-vue": "^1.0.3"
+  },
+  "devDependencies": {
+    "vuepress": "^0.13.1"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
