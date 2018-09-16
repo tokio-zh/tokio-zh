@@ -12,20 +12,20 @@
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url("/imgs/front.jpg");
     background-size: cover;
     padding-top: 11%;
-    max-height: 555px;
+    max-height: 560px;
 }
 
 .home .hero, .home .description {
     color: white !important;
 }
 
-.home .features 
-    margin-top: 6.5rem !important;
-        
-
-@media (max-width: 420px) {
+@media only screen and (min-width: 421px) and (max-width: 603px) {
     .front {
-        max-height: 500px;
+        max-height: 625px;
     }
 }
-    
+@media (max-width: 420px) {
+    .front {
+        max-height: 480px;
+    }
+}
