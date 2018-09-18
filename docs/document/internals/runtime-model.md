@@ -4,7 +4,7 @@
 
 ## 非阻塞执行
 
-使用`Future` trait实现Tokio任务：
+使用[`Future`] trait实现Tokio任务：
 
 ```rust
 struct MyTask {
@@ -31,7 +31,7 @@ impl Future for MyTask {
 }
 ```
 
-使用`tokio :: spawn`或通过调用`spawn`将任务提交给执行程序执行程序对象上的方法。 `poll`函数驱动任务。没有工作没有调用`poll`就完成了。在任务上调用`poll`是执行者的工作直到`Ready（（））`返回。
+使用`tokio :: spawn`或通过调用[`Spawn`]将任务提交给执行程序执行程序对象上的方法。 `poll`函数驱动任务。没有工作没有调用`poll`就完成了。在任务上调用`poll`是执行者的工作直到`Ready（（））`返回。
 
 `MyTask`将从`my_resource`接收一个值并处理它。一旦价值已经处理完毕，任务已完成其逻辑并完成。这是返回'Ok（Async :: Ready（（）））`表示。
 
@@ -47,8 +47,7 @@ impl Future for MyTask {
 
 因此，只有执行`poll`的实现才是重要的在很短的时间内。对于I / O绑定应用程序，通常会发生这种情况自动。但是，如果任务必须运行更长的计算，则应该推迟工作到[阻塞池]或将计算分解为更小的块和[yield]在每个块之后返回执行程序。
 
-[阻塞池]：https：//docs.rs/tokio-threadpool/0.1/tokio_threadpool/fn.blocking.html
-[yield]：#yielding
+[阻塞池]: https：//docs.rs/tokio-threadpool/0.1/tokio_threadpool/fn.blocking.html
 
 ## 任务系统
 
@@ -63,17 +62,17 @@ impl Future for MyTask {
 通过两个API完成跟踪兴趣并通知准备情况的变化：
 
   * [`task :: current`] [当前]
-  * [`Task :: notify`] `notify`
+  * [`Task :: notify`] [`notify`]
 
 当调用`my_resource.poll（）`时，如果资源准备就绪，则立即执行不使用任务系统返回值。如果资源**不**准备好了，它通过调用[`task :: current（） - >来获取当前任务的句柄Task`] [电流]。通过读取线程局部变量集获得此句柄执行人。
 
-一些外部事件（在网络上接收的数据，后台线程完成计算等...将导致`my_resource`准备好生成它的价值。那时，准备好`my_resource`的逻辑将调用从[`task :: current`] `current`获得的任务句柄上的`Notify`。这个表示准备就绪变为执行者，执行者随后安排任务执行。
+一些外部事件（在网络上接收的数据，后台线程完成计算等...将导致`my_resource`准备好生成它的价值。那时，准备好`my_resource`的逻辑将调用从[`task :: current`] [`current`]获得的任务句柄上的[`notify`]。这个表示准备就绪变为执行者，执行者随后安排任务执行。
 
 如果多个任务表示对资源感兴趣，则只有* last *任务这样做会得到通知。资源旨在从单一使用只有任务。
 
 ## `Async :: NotReady`
 
-任何返回“Async”的函数都必须遵守`contract` `contract`。 什么时候返回`NotReady`，当前任务**必须**已经注册准备就绪变更通知。 讨论了资源的含义以上部分。 对于任务逻辑，这意味着无法返回`NotReady`除非资源已返回“NotReady”。 通过这样做，[合同] [合同]过渡地维护。 当前任务已注册通知，因为已从资源收到`NotReady`。
+任何返回“Async”的函数都必须遵守[`contract`] [`contract`]。 什么时候返回`NotReady`，当前任务**必须**已经注册准备就绪变更通知。 讨论了资源的含义以上部分。 对于任务逻辑，这意味着无法返回`NotReady`除非资源已返回“NotReady”。 通过这样做，[合同] [合同]过渡地维护。 当前任务已注册通知，因为已从资源收到`NotReady`。
 
 必须非常小心避免在没有的情况下返回“NotReady”从资源收到`NotReady`。 例如，以下任务任务结果永远不会完成。
 
@@ -138,7 +137,7 @@ fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
 
 ## Yielding
 
-有时，任务必须返回“NotReady”而不会在资源上被阻止。这通常发生在运行计算很大且任务想要的时候将控制权交还执行人以允许其执行其他期货。
+有时，任务必须返回“NotReady”而不会在资源上被阻止。这通常发生在运行计算很大且任务想要的时候将控制权交还执行人以允许其执行其他 `future`。
 
 通过通知当前任务并返回“NotReady”来完成让步：
 
@@ -183,13 +182,13 @@ impl Future for Count {
 
 执行人员负责完成许多任务。任务是产生于执行程序，执行程序调用它的`poll`函数需要的时候。执行程序挂钩到任务系统以接收资源准备通知。
 
-通过将任务系统与执行程序实现分离，具体执行和调度逻辑可以留给执行程序实现。东京提供两个执行器实现，每个实现具有独特的特征：`current_thread`和`thread_pool`。
+通过将任务系统与执行程序实现分离，具体执行和调度逻辑可以留给执行程序实现。东京提供两个执行器实现，每个实现具有独特的 `trait`：[`current_thread`]和[`thread_pool`]。
 
-当任务首次生成执行程序时，执行程序将其包装[`Spawn`] [菌种]。这将任务逻辑与任务状态绑定（这主要是遗留原因所需要的）。执行者通常会将任务存储在堆，通常是将它存储在`Box`或`Arc`中。当执行者选择一个执行任务，它调用[`Spawn :: poll_future_notify`] `poll_future_notify`。此函数确保将任务上下文设置为线程局部变量这样[`task :: current`] `current`能够读取它。
+当任务首次生成执行程序时，执行程序将其包装[[`Spawn`]] [菌种]。这将任务逻辑与任务状态绑定（这主要是遗留原因所需要的）。执行者通常会将任务存储在堆，通常是将它存储在`Box`或`Arc`中。当执行者选择一个执行任务，它调用[`Spawn :: poll_future_notify`] [`poll_future_notify`]。此函数确保将任务上下文设置为线程局部变量这样[`task :: current`] [`current`]能够读取它。
 
-当调用[`poll_future_notify`] `poll_future_notify`时，执行者也是传递通知句柄和标识符。这些论点包含在由[`task :: current`] `current`返回的任务句柄，是任务的方式与遗嘱执行人有关。
+当调用[[`poll_future_notify`]] [`poll_future_notify`]时，执行者也是传递通知句柄和标识符。这些论点包含在由[`task :: current`] [`current`]返回的任务句柄，是任务的方式与遗嘱执行人有关。
 
-notify句柄是`Notify` `Notify`的实现和标识符是执行程序用于查找当前任务的值。什么时候调用[`Task :: notify`] `notify`，`Notify` [Notify :: notify]函数使用提供的标识符调用notify句柄。实施该函数负责执行调度逻辑。
+notify句柄是[`notify`] [`notify`]的实现和标识符是执行程序用于查找当前任务的值。什么时候调用[`Task :: notify`] [`notify`]，[`notify`] [Notify :: notify]函数使用提供的标识符调用notify句柄。实施该函数负责执行调度逻辑。
 
 实现执行程序的一种策略是将每个任务存储在`Box`和使用链接列表来跟踪计划执行的任务。什么时候调用[`Notify :: notify`] [Notify :: notify]，然后执行与之关联的任务标识符被推送到`scheduled`链表的末尾。当。。。的时候执行程序运行时，它从链表的前面弹出并执行任务如上所述。
 
@@ -197,57 +196,57 @@ notify句柄是`Notify` `Notify`的实现和标识符是执行程序用于查找
 
 ## 资源，驱动程序和运行时
 
-资源是叶子期货，即未实施的期货其他期货。它们是使用上述任务系统的类型与执行者互动。资源类型包括TCP和UDP套接字，定时器，通道，文件句柄等.Tokio应用程序很少需要实现资源。相反，他们使用Tokio或第三方包装箱提供的资源。
+资源是叶子 `future`，即未实施的 `future`其他 `future`。它们是使用上述任务系统的类型与执行者互动。资源类型包括TCP和UDP套接字，定时器，通道，文件句柄等.Tokio应用程序很少需要实现资源。相反，他们使用Tokio或第三方包装箱提供的资源。
 
-通常，资源本身不能起作用并且需要驱动程序。对于例如，Tokio TCP套接字由`Reactor`支持。反应堆是socket资源驱动程序。单个驱动程序可以为大量资源供电实例。为了使用该资源，驱动程序必须在某处运行这个过程。 Tokio提供网络资源的驱动程序（`tokio-reactor`），文件资源（`tokio-fs`）和定时器（`tokio-timer`）。提供解耦驱动程序组件允许用户选择他们想要的组件使用。每个驱动程序可以单独使用或与其他驱动程序结合使用。
+通常，资源本身不能起作用并且需要驱动程序。对于例如，Tokio TCP套接字由[`Reactor`]支持。反应堆是socket资源驱动程序。单个驱动程序可以为大量资源供电实例。为了使用该资源，驱动程序必须在某处运行这个过程。 Tokio提供网络资源的驱动程序（[`tokio-reactor`]），文件资源（[`tokio-fs`]）和定时器（[`tokio-timer`]）。提供解耦驱动程序组件允许用户选择他们想要的组件使用。每个驱动程序可以单独使用或与其他驱动程序结合使用。
 
 正因为如此，为了使用Tokio并成功执行任务，一个应用程序必须启动执行程序和资源的必要驱动程序应用程序的任务依赖于。这需要大量的样板。为了管理样板，Tokio提供了几个运行时选项。运行时
 是一个执行器，捆绑了所有必要的驱动程序来为Tokio的资源提供动力。运行时不是单独管理所有各种Tokio组件在一次通话中创建并启动。
 
-Tokio提供[并发运行时] [并发]和a[单线程] `current_thread`运行时。并发运行时由后备多线程，工作窃取执行程序。单线程运行时执行当前线程上的所有任务和驱动程序。用户可以选择运行时最适合应用的特性。
+Tokio提供[并发运行时] [并发]和a[单线程] [`current_thread`]运行时。并发运行时由后备多线程，工作窃取执行程序。单线程运行时执行当前线程上的所有任务和驱动程序。用户可以选择运行时最适合应用的 `trait`。
 
 ## Future
 
-如上所述，任务是使用`Future`特性实现的。 这个特点不仅限于实施任务。 A `Future`是表示a的值非阻塞计算，将在未来的某个时间完成。 任务是一个计算没有输出。 Tokio中的许多资源都用`Future`实现。 例如，超时是`Future`在达到截止日期后完成。
+如上所述，任务是使用[`Future`] `trait`实现的。 这个特点不仅限于实施任务。 A [`Future`]是表示a的值非阻塞计算，将在未来的某个时间完成。 任务是一个计算没有输出。 Tokio中的许多资源都用[`Future`]实现。 例如，超时是[`Future`]在达到截止日期后完成。
 
-该特征包括许多可用于工作的组合器未来价值观。
+该 `trait`包括许多可用于工作的组合器未来价值观。
 
 应用程序是通过实现特定于应用程序的“Future”来构建的使用组合器来定义或定义应用程序逻辑。 通常，两者兼而有之策略是最成功的。
 
-`goroutine`: https://www.golang-book.com/books/intro/10#section1
+[`goroutine`]: https://www.golang-book.com/books/intro/10#section1
 
-`erlang`: http://erlang.org/doc/reference_manual/processes.html
+[`erlang`]: http://erlang.org/doc/reference_manual/processes.html
 
-`Future`: https://docs.rs/futures/0.1/futures/future/trait.Future.html
+[`Future`]: https://docs.rs/futures/0.1/futures/future/trait.Future.html
 
-`Reactor`: https://docs.rs/tokio-reactor/0.1.5/tokio_reactor/
+[`Reactor`]: https://docs.rs/tokio-reactor/0.1.5/tokio_reactor/
 
-`tokio-reactor`: https://docs.rs/tokio-reactor
+[`tokio-reactor`]: https://docs.rs/tokio-reactor
 
-`tokio-fs`: https://docs.rs/tokio-fs
+[`tokio-fs`]: https://docs.rs/tokio-fs
 
-`tokio-timer`: https://docs.rs/tokio-timer
+[`tokio-timer`]: https://docs.rs/tokio-timer
 
-`concurrent`: https://docs.rs/tokio/0.1.8/tokio/runtime/index.html
+[`concurrent`]: https://docs.rs/tokio/0.1.8/tokio/runtime/index.html
 
-`current_thread`: https://docs.rs/tokio/0.1.8/tokio/runtime/current_thread/index.html
+[`current_thread`]: https://docs.rs/tokio/0.1.8/tokio/runtime/current_thread/index.html
 
-`current_thread`: http://docs.rs/tokio-current-thread
+[`current_thread`]: http://docs.rs/tokio-current-thread
 
-`thread_pool`: https://docs.rs/tokio-threadpool
+[`thread_pool`]: https://docs.rs/tokio-threadpool
 
-`Spawn`: https://docs.rs/futures/0.1/futures/executor/struct.Spawn.html
+[`Spawn`]: https://docs.rs/futures/0.1/futures/executor/struct.Spawn.html
 
-`poll_future_notify`: https://docs.rs/futures/0.1/futures/executor/struct.Spawn.html#method.poll_future_notify
+[`poll_future_notify`]: https://docs.rs/futures/0.1/futures/executor/struct.Spawn.html#method.poll_future_notify
 
-`current`: https://docs.rs/futures/0.1/futures/task/fn.current.html
+[`current`]: https://docs.rs/futures/0.1/futures/task/fn.current.html
 
-`notify`: https://docs.rs/futures/0.1/futures/task/struct.Task.html#method.notify
+[`notify`]: https://docs.rs/futures/0.1/futures/task/struct.Task.html#method.notify
 
-`Notify`: https://docs.rs/futures/0.1/futures/executor/trait.Notify.html
+[`notify`]: https://docs.rs/futures/0.1/futures/executor/trait.Notify.html
 
-`Notify::notify`: https://docs.rs/futures/0.1/futures/executor/trait.Notify.html#tymethod.notify
+[`Notify::notify`]: https://docs.rs/futures/0.1/futures/executor/trait.Notify.html#tymethod.notify
 
-`contract`: https://docs.rs/futures/0.1.23/futures/future/trait.Future.html#tymethod.poll
+[`contract`]: https://docs.rs/futures/0.1.23/futures/future/trait.Future.html#tymethod.poll
 
-`blocking pool`: https://docs.rs/tokio-threadpool/0.1/tokio_threadpool/fn.blocking.html
+[`blocking pool`]: https://docs.rs/tokio-threadpool/0.1/tokio_threadpool/fn.blocking.html
