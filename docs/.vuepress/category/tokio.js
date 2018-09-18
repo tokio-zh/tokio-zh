@@ -2,7 +2,7 @@ exports.tokio = (title) => {
     return [
         '',
         {
-          title: '开始',
+          title: '入门',
           collapsable: false,
           children: [
             'hello-world',
