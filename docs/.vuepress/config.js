@@ -17,7 +17,7 @@ module.exports = {
     serviceWorker: true,
     theme: 'vue',
     themeConfig: {
-        repo: 'tokio-zh',
+        repo: 'tokio-rs/tokio',
         docsDir: 'docs',
         displayAllHeaders: true,
         editLinks: true,

@@ -2,7 +2,7 @@
 home: true
 heroImage: /imgs/tokio.png
 pageClass: front
-actionText: QQ群570065685
+actionText: 开始
 actionLink: /document/
 footer: MIT Licensed | Copyright © 2018-present | krircc
 ---
@@ -53,7 +53,9 @@ footer: MIT Licensed | Copyright © 2018-present | krircc
     <a href="https://github.com/tokio-rs/tokio" target="_black">GitHub</a>&emsp;
     <a href="https://twitter.com/tokio_rs" target="_black">Twitter</a>&emsp;
     <a href="https://github.com/tokio-rs/tokio/tree/master/examples" target="_black">示例</a>&emsp;
-    <a href="https://tokio-zh.github.io/document" target="_black">概括</a>
+    <a href="https://tokio-zh.github.io/document" target="_black">概括</a>&emsp;
+    <a href="https://github.com/tokio-zh" target="_black">中文GitHub</a>&emsp;
+    <a href="#">QQ群570065685</a>
 </div>
 
-<p>由我们的@carllerche和贡献者所有的爱和帮助下构建</p>
+<p>Tokio是由我们的@carllerche和贡献者所有的爱和帮助下构建</p>
