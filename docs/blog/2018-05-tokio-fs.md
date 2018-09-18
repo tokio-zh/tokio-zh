@@ -1,78 +1,78 @@
-# New Tokio release, now with filesystem support
+# 新的Tokio版本，现在支持文件系统
 
-It took a bit longer than I had initially hoped (as it always does), but a new
-Tokio version has been released. This release includes, among other features, a
-new [set of APIs][fs] that allow performing filesystem operations from an
-asynchronous context.
+它花了比我最初希望的更长的时间（一如既往），但是新的
+Tokio版本已经发布。此版本包括其他功能，a
+新的[API集] [fs]允许从一个执行文件系统操作
+异步上下文。
 
-## Filesystem APIs
+## Filesystem API
 
-Interacting with files (and other filesystem types) requires\* blocking system
-calls and we all know that blocking and asynchronous do not mix. So,
-historically, when people ask "how do I read from and write to files?", the
-answer is to use a thread pool. The idea is that when a blocking read or
-write must be performed, it is done on a thread pool so that it does not block
-the asynchronous reactor.
+与文件（和其他文件系统类型）交互需要\ *阻塞系统
+调用，我们都知道阻塞和异步不混合。所以，
+从历史上看，当人们问“我如何读取和写入文件？”时，
+答案是使用线程池。这个想法是，当阻止读取或
+必须执行write，它是在线程池上完成的，因此它不会阻塞
+异步反应堆。
 
-Requiring a separate thread pool for performing file operations requires message
-passing. The asynchronous task must send a message to the thread pool asking it
-to do a read from the file, the thread pool does the read and fills a buffer
-with the result. Then the thread pool sends the buffer back to the asynchronous
-task. Not only does this add the overhead for dispatching messages, but it also
-requires allocating buffers to send the data back and forth.
+需要单独的线程池来执行文件操作需要消息
+通过。异步任务必须向线程池发送消息，询问它
+要从文件中读取，线程池会执行读取并填充缓冲区
+结果。然后线程池将缓冲区发送回异步
+任务。这不仅增加了调度消息的开销，而且还增加了
+需要分配缓冲区来回发送数据。
 
-Now, with Tokio's new [filesystem APIs][fs], this message passing overhead is no
-longer needed. A new [`File`] type is added. This type looks very similar to the
-type provided by `std`, but it implements `AsyncRead` and `AsyncWrite`, making
-it safe to use *directly* from an asynchronous task running on the Tokio
-runtime.
+现在，使用Tokio的新[filesystem APIs] [fs]，这个消息传递开销是没有的
+需要更久。添加了一个新的[`File`]类型。这种类型看起来非常相似
+由`std`提供的类型，但它实现了`AsyncRead`和`AsyncWrite`
+直接使用*来自在Tokio上运行的异步任务是安全的
+运行。
 
-Because the [`File`] type implements `AsyncRead` and `AsyncWrite`, it can be
-used in much the same way that a TCP socket would be used from Tokio.
+因为[`File`]类型实现了'AsyncRead`和`AsyncWrite`，所以它可以
+使用的方式与从Tokio使用TCP套接字的方式大致相同。
 
-As of today, the filesystem APIs are pretty minimal. There are many other APIs
-that need to be implemented to bring the Tokio filesystem APIs in line with
-`std`, but those are left as an exercise to the reader to submit as PRs!
+截至今天，文件系统API非常简单。还有许多其他API
+需要实现以使Tokio文件系统API符合
+`std`，但这些留给读者作为PRs提交的练习！
 
-\* Yes, there are some operating systems that provide fully asynchronous
-filesystem APIs, but these are either incomplete or not portable.
+\ *是的，有一些操作系统提供完全异步
+文件系统API，但这些API不完整或不可移植。
 
-## Standard in and out
+## 标准进出
 
-This release of Tokio also includes asynchronous [standard input][in] and
-[standard output][out] APIs. Because it is difficult to provide true
-asynchronous standard input and output in a portable way, the Tokio versions use
-a similar strategy as the blocking file operation APIs.
+此版本的Tokio还包括异步[标准输入] [in]和
+[标准输出] [out] API。因为很难提供真实的
+Tokio版本使用便携式方式的异步标准输入和输出
+与阻止文件操作API类似的策略。
 
-## `blocking`
+## `阻止`
 
-These new APIs are made possible thanks to a new [`blocking`] API that allows
-annotating sections of code that will block the current thread. These blocking
-sections can include blocking system calls, waiting on mutexes, or CPU heavy
-computations.
+由于允许使用新的[`bl​​ocking`] API，这些新API成为可能
+注释将阻止当前线程的代码段。这些阻塞
+部分可以包括阻止系统调用，等待互斥锁或CPU繁重
+计算。
 
-By informing the Tokio runtime that the current thread will block, the runtime
-is able to move the event loop from the current thread to another thread,
-freeing the current thread up to permit blocking.
+通过告知Tokio运行时当前线程将阻塞运行时
+能够将事件循环从当前线程移动到另一个线程，
+释放当前线程以允许阻塞。
 
-This is the opposite of using message passing to run blocking operations on a
-threadpool. Instead of moving the blocking operation to another thread, the
-entire event loop is moved.
+这与使用消息传递在a上运行阻塞操作相反
+线程池。而不是将阻塞操作移动到另一个线程，
+整个事件循环被移动。
 
-In practice, moving the event loop to another thread is much cheaper than moving
-the blocking operation. Doing so only requires a few atomic operations. The
-Tokio runtime also keeps a pool of standby threads ready to allow moving the
-event loop as fast as possible.
+实际上，将事件循环移动到另一个线程比移动便宜得多
+阻止操作。这样做只需要几个原子操作。该
+Tokio运行时还保持备用线程池准备好允许移动
+事件循环尽可能快。
 
-This also means that using the `blocking` annotation and `tokio-fs` must be done
-from the context of the Tokio runtime and not other futures aware executors.
+这也意味着必须使用`blocking`注释和`tokio-fs`
+来自Tokio运行时的上下文而不是其他期货感知执行者。
 
-## Current thread runtime
+## 当前线程运行时
 
-The release also includes a ["current thread"][rt] version of the runtime
-(thanks [kpp](https://github.com/kpp)). This is similar to the existing runtime,
-but runs all components on the current thread. This allows running futures that
-do not implement `Send`.
+该版本还包括运行时的[“当前线程”] [rt]版本
+（感谢[kpp]（https://github.com/kpp））。这类似于现有的运行时，
+但是在当前线程上运行所有组件。这允许运行期货
+不要实现[`Send`]。
 
 [fs]: https://docs.rs/tokio/0.1/tokio/fs/index.html
 [`File`]: https://docs.rs/tokio/0.1/tokio/fs/struct.File.html

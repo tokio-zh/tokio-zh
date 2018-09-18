@@ -1,99 +1,99 @@
-# Tokio Reform is Shipped and the Road to 0.2
+# Tokio改革发货，通往0.2
 
-Hi all!
+大家好！
 
-I'm happy to announce that today, the changes proposed in the [reform RFC] have
-been released to [crates.io] as `tokio` 0.1.
+我很高兴地宣布，今天，[改革RFC]中提出的改变已经有了
+被发布到[crates.io]作为`tokio` 0.1。
 
-The primary changes are:
+主要变化是：
 
-* Add a *default* global event loop, eliminating the need for setting up and
-  managing your own event loop in the vast majority of cases.
+* 添加*default*全局事件循环，无需设置和
+  在绝大多数情况下管理自己的事件循环。
 
-* Decouple all task execution functionality from Tokio.
+* 从Tokio中解除所有任务执行功能。
 
-## The new global event loop
+## 新的全局事件循环
 
-Up until today, creating an event loop was a manual process. Even though the
-vast majority of Tokio users would setup the reactor to do the same thing,
-everyone had to do it each time. This was partially due to the fact that there
-was a significant difference between running code on the Tokio reactor's thread
-or from another thread (like a thread pool).
+到目前为止，创建事件循环是一个手动过程。即便如此
+绝大多数Tokio用户会设置反应堆来做同样的事情，
+每次都必须这样做。这部分是由于那里的事实
+是在Tokio reactor的线程上运行代码之间的显着差异
+或者从另一个线程（如线程池）。
 
-The key insight that allowed for the Tokio reform changes is that the Tokio
-reactor doesn't actually have to be an executor. In other words, prior to these
-changes, the Tokio reactor would both power I/O resources **and** manage
-executing user submitted tasks.
+Tokio改革的关键洞察力是Tokio
+反应堆实际上不必是执行人。换句话说，在这些之前
+改变，Tokio反应堆将为I / O资源**和**管理提供动力
+执行用户提交的任务。
 
-Now, Tokio provides a reactor to drive I/O resources (like `TcpStream` and
-`UdpSocket`) separately from the task executor. This means that it is easy to
-create Tokio-backed networking types from *any* thread, making it easy to create
-either single or multi threaded Tokio-backed apps.
+现在，Tokio提供了一个驱动I / O资源的反应器（如`TcpStream`和
+`UdpSocket`）与任务执行器分开。这意味着很容易
+从* any *线程创建Tokio支持的网络类型，使其易于创建
+单线程或多线程Tokio支持的应用程序。
 
-For task execution, Tokio provides the [`current_thread`] executor, which
-behaves similarly to how the built-in tokio-core executor did. The plan is to
-eventually move this executor into the [`futures`] crate, but for now it is
-provided directly by Tokio.
+对于任务执行，Tokio提供[`current_thread`]执行程序，它
+行为与内置的tokio-core执行器的行为类似。计划是
+最终将这个执行者移到[`期货`]箱子里，但现在却是
+由Tokio直接提供。
 
-## The road to 0.2
+## 通往0.2的道路
 
-The Tokio reform changes have been released as 0.1. Dependencies ([`tokio-io`],
-[`futures`], [`mio`], etc...) have not had their versions incremented. This
-allows the `tokio` crate to be released with minimal ecosystem disruption.
+Tokio改革的变化已经发布为0.1。依赖（[`tokio-io`]，
+[`期货`]，[`mio`]等...）没有增加他们的版本。这个
+允许'tokio`箱子在最小的生态系统中断的情况下被释放。
 
-The plan is to let the changes made in this release get some usage before
-committing to them. Any fixes that require breaking changes will be able to be
-done at the same time as the release to all the other crates. The goal is for
-this to happen in 6-8 weeks. So please try out the changes released today and
-provide feedback.
+计划是让此版本中的更改在之前得到一些用法
+承诺给他们。任何需要重大更改的修复都可以
+在向所有其他板条箱发布的同时完成。目标是
+这将在6-8周内发生。所以请试试今天发布的变化
+提供反馈信息。
 
-## Rapid iteration
+## 快速迭代
 
-This is just the beginning. Tokio has ambitious goals to provide additional
-functionality to get a great "out of the box" experience building asynchronous
-I/O applications in Rust.
+这仅仅是个开始。 Tokio有雄心勃勃的目标来提供额外的
+功能，以获得建立异步的伟大“开箱即用”体验
+Rust中的I / O应用程序。
 
-In order to reach these goals as fast as possible without causing unnecessary
-ecosystem disruption, we will be taking a few steps.
+为了尽可能快地达到这些目标而不会造成不必要的
+生态系统中断，我们将采取一些步骤。
 
-First, similarly to the `futures` 0.2 release, the `tokio` crate will be
-transitioned to be more of a facade. Traits and types will be broken up into a
-number of sub crates and re-exported by `tokio`. Application authors will be
-able to depend directly on `tokio` while library authors will pick and choose
-the specific Tokio components that they wish to use as part of their libraries.
+首先，类似于`期货`0.2版本，`tokio`箱子将是
+转变为更多的立面。特征和类型将被分解为一个
+子箱数量并由`tokio`重新出口。申请作者将是
+能够直接依赖`tokio`，而图书馆作者将挑选
+他们希望将特定的Tokio组件用作其库的一部分。
 
-Each sub crate will clearly indicate its stability level. Obviously, there is an
-upcoming breaking change with the futures 0.2 release, but after that,
-fundamental building blocks will aim to remain stable for at least a year. More
-experimental crates will reserve the right to issue breaking changes at a
-quicker pace.
+每个子箱都将清楚地表明其稳定性水平。显然，有一个
+期货0.2即将发布的突破性变化，但在此之后，
+基本构建模块将致力于保持稳定至少一年。更多
+实验箱将保留在a处发布重大变更的权利
+更快的步伐。
 
-This means that the `tokio` crate itself will be able to iterate at a faster
-pace while the library ecosystem remains stable.
+这意味着`tokio` crate本身将能够以更快的速度迭代
+图书馆生态系统保持稳定的步伐。
 
-The pre 0.2 period will also be a period of experimentation. Additional
-functionality will be added to Tokio in an experimental capacity. Before an 0.2
-release, an RFC will be posted covering the functionality that we would like to
-include in that release.
+前0.2期也将是一段实验期。额外
+功能将以实验能力添加到Tokio。在0.2之前
+发布，将发布一个RFC，涵盖我们想要的功能
+包含在该版本中。
 
-## Open question
+## 打开问题
 
-One remaining question is what to do about `tokio-proto`. It was released as
-part of the initial Tokio release. Since then, the focus has shifted and that
-crate has not received enough attention.
+剩下的一个问题是如何处理`tokio-proto`。它被发布了
+最初的Tokio发布的一部分。从那以后，焦点已经转移了
+箱子没有得到足够的重视。
 
-I posted an issue to discuss what to do with that crate
-[here](https://github.com/tokio-rs/tokio/issues/118)
+我发布了一个问题，讨论如何处理该箱子
+[这里]（https://github.com/tokio-rs/tokio/issues/118）
 
-## Looking Forward
+## 期待
 
-Please try out the changes released today. Again, the next couple of months are a period
-of experimentation before we commit on the next release. So, now is the time to try things
-out and provide feedback.
+请尝试今天发布的更改。再次，接下来的几个月是一个时期
+在我们提交下一个版本之前进行实验。所以，现在是时候尝试了
+出来并提供反馈。
 
-During this time, we'll be integrating this work to build out higher-level
-primitives in [Tower], which is being driven by the production operational needs
-of the [Conduit] project.
+在此期间，我们将整合这项工作，以建立更高层次
+[塔]中的原语，由生产运营需求驱动
+[Conduit]项目。
 
 [reform RFC]: https://github.com/tokio-rs/tokio-rfcs/blob/master/text/0001-tokio-reform.md
 [crates.io]: https://crates.io/crates/tokio

@@ -1,73 +1,73 @@
-# Tokio 0.1.8 有许多增量改进
+# Tokio 0.1.8有许多增量改进
 
-It took a bit longer than I had initially hoped (as it always does), but a new
-Tokio version has been released. This release includes, among other features, a
-new [set of APIs][fs] that allow performing filesystem operations from an
-asynchronous context, concurrency improvements, timer improvements, and more
-(including bug fixes, so be sure to update!).
+它花了比我最初希望的更长的时间（一如既往），但是新的
+Tokio版本已经发布。此版本包括其他功能，a
+新的[API集] [fs]允许从一个执行文件系统操作
+异步上下文，并发改进，计时器改进等
+（包括错误修复，所以一定要更新！）。
 
-It has been a little bit since the last post. There haven't been any big
-feature releases, but that doesn't mean that we have been idle. New crates have
-been released with many incremental improvements over the past few months. Many
-of these improvements have been contributed by the community, so I thought a
-little highlight was in order.
+自上一篇文章以来已经有点了。没有什么大事
+功能发布，但这并不意味着我们已经闲置。新的板条箱有
+在过去的几个月中，已经发布了许多渐进式的改进。许多
+这些改进是由社区贡献的，所以我想了一个
+小亮点是有序的。
 
-## Filesystem APIs
+## Filesystem API
 
-The initial release of `tokio-fs` was more of a stub than a full implementation.
-It only included basic file system operations.
+`tokio-fs`的初始版本更像是一个存根，而不是一个完整的实现。
+它只包括基本的文件系统操作。
 
-The latest release includes [non-blocking versions][fs] for most file system
-APIs. This amazing work was contributed mostly by [@griff] in an [epic PR][pr]
-and [@lnicola] in a series of smaller PRs, but many others participated to help
-review and improve the crate.
+最新版本包括大多数文件系统的[非阻塞版本] [fs]
+蜜蜂。这个惊人的作品主要是由[@griff]在[史诗公关] [公关]中提供的。
+和[@lnicola]在一系列较小的公关中，但许多其他人参与了帮助
+审查并改进箱子。
 
-Thanks goes to: [@dekellum], [@matsadler], [@debris], [@mati865], [@lovebug356],
-[@bryanburgers], [@shepmaster].
+谢谢：[@ dekellum]，[@ matsadler]，[@ debris]，[@ mati865]，[@ lovebug356]，
+[@bryanburgers]，[@ shepmaster]。
 
-[fs]: https://docs.rs/tokio/0.1.8/tokio/fs/index.html
-[pr]: https://github.com/tokio-rs/tokio/pull/494
+[fs]: https：//docs.rs/tokio/0.1.8/tokio/fs/index.html
+[pr]: https：//github.com/tokio-rs/tokio/pull/494
 
-## Concurrency improvements
+## 并发改进
 
-Over the past couple months, [@stjepang] has been chugging along improving the
-concurrency related bits of Tokio. Some highlights:
+在过去的几个月里，[@stjepang]一直在努力改善
+与Tokio相关的并发比特。一些亮点：
 
-* [#459] - Fix a race in thread wakeup
-* [#470] - Improve worker spinning
-* [#517] - Improve scalability of a RW Lock used in the reactor.
-* [#534] - Improve the stealing part of the work-stealing runtime.
+* [#459] - 修复线程唤醒中的竞争
+* [#470] - 改善工人纺纱
+* [#517] - 提高反应堆中使用的RW锁的可扩展性。
+* [#534] - 改进工作窃取运行时的窃取部分。
 
-We also had a good chat while he was in town for Rustconf, and I'm excited for
-his work that is yet to come.
+我在城里为Rustconf做了很好的聊天，我很兴奋
+他的工作尚未到来。
 
-And of course, thanks for all the [crossbeam] work. Tokio heavily depends on it.
+当然，感谢所有[crossbeam]的工作。 Tokio在很大程度上取决于它。
 
-## `current_thread::Runtime`
+## `current_thread :: Runtime`
 
-The `current_thread::Runtime` has also received a number of incremental
-improvements since it was initially introduced by [@vorner] and [@kpp].
+`current_thread :: Runtime`也收到了一些增量
+因为它最初是由[@vorner]和[@kpp]引入的。
 
-[@sdroege] added a `Handle` that allows spawning tasks onto the runtime from
-other threads ([#340]). This is implemented using a channel to send the task to the
-runtime thread (a similar strategy that `tokio-core` used).
+[@sdroege]添加了一个`Handle`，允许将生成任务生成到运行时
+其他线程（[＃340]）。这是使用通道将任务发送到的
+运行时线程（类似'tokio-core`使用的策略）。
 
-And [@jonhoo] implemented a `block_on_all` function ([#477]) and fixed a bug
-with tracking the number of active futures and coordinating shutdown ([#478])
+并且[@jonhoo]实现了`block_on_all`函数（[＃477]）并修复了一个错误
+跟踪活跃期货的数量并协调关闭（[＃478]）
 
-## Timer improvements
+## 计时器改进
 
-`tokio::timer` does get a new feature: [`DelayQueue`]. This type allows the user
-to store values that get returned back after some period of time. This is useful
-for supporting more complex time related cases.
+`tokio :: timer`确实得到了一个新功能：[`DelayQueue`]。这种类型允许用户
+存储一段时间后返回的值。这很有用
+用于支持更复杂的时间相关案例。
 
-Lets' take a cache as an example. The goal of a cache is to hold values
-associated with a key for a certain amount of time. After the time elapses, the
-value is dropped. It has always been possible to implement this with
-[`tokio::timer::Delay`][Delay], but is a bit challenging. When the cache has many
-entries, all of them must be scanned to check if they need to be dropped.
+让我们以缓存为例。缓存的目标是保存值
+在一定时间内与密钥相关联。经过一段时间后，
+价值下降。一直有可能实现这一点
+[`tokio :: timer :: Delay`] [延迟]，但有点挑战。当缓存有很多
+必须扫描所有条目以检查是否需要删除它们。
 
-With [`DelayQueue`], the implementation becomes more efficient:
+使用[`DelayQueue`]，实现变得更有效：
 
 [`DelayQueue`]: https://docs.rs/tokio-timer/0.2.6/tokio_timer/struct.DelayQueue.html
 [Delay]: https://docs.rs/tokio-timer/0.2.6/tokio_timer/struct.Delay.html
@@ -76,8 +76,6 @@ With [`DelayQueue`], the implementation becomes more efficient:
 #[macro_use]
 extern crate futures;
 extern crate tokio;
-# type CacheKey = String;
-# type Value = String;
 use tokio::timer::{delay_queue, DelayQueue, Error};
 use futures::{Async, Poll, Stream};
 use std::collections::HashMap;
@@ -117,19 +115,18 @@ impl Cache {
         Ok(Async::Ready(()))
     }
 }
-# fn main() {}
 ```
 
 ## Many other small improvements
 
-Besides what has been listed above, Tokio has received many small improvements
-and bug fixes across most of the crates. These have been provided by our amazing
-community.  I'm hoping that over time, more and more people will join the effort
-of building Tokio and help it continue to evolve.
+除了上面列出的内容之外，Tokio还获得了许多小改进
+并修复了大多数板条箱的错误。 这些都是由我们惊人的提供
+社区。 我希望随着时间的推移，越来越多的人会加入这项努力
+建立Tokio并帮助它继续发展。
 
-So, a big thanks to [all of you have have contributed][contrib] to Tokio to date.
+所以，非常感谢[你们所有人]迄今为止对Tokio贡献。
 
-[contrib]: https://github.com/tokio-rs/tokio/graphs/contributors
+[你们所有人]: https://github.com/tokio-rs/tokio/graphs/contributors
 [crossbeam]: https://github.com/crossbeam-rs/
 [@dekellum]: https://github.com/dekellum
 [@matsadler]: https://github.com/matsadler
