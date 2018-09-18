@@ -5,11 +5,11 @@
 对各种零碎的更新，它们恰好便于降落
 大约在同一时间！简而言之，改进是：
 
-*从[tokio-core]中提取的新[tokio-io]箱子，弃用了
+* 从[tokio-core]中提取的新[tokio-io]箱子，弃用了
   [`tokio_core :: io`]模块。
-*将[bytes] crate引入[tokio-io]，允许抽象结束
+* 将[bytes] crate引入[tokio-io]，允许抽象结束
   缓冲和利用矢量I / O等基础功能。
-*在“Sink”特征中添加一种新方法“close”，以表达优雅
+* 在“Sink”特征中添加一种新方法“close”，以表达优雅
   关掉。
 
 这些更改改进了Tokio的组织和抽象
