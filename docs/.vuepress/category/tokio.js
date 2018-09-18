@@ -29,8 +29,8 @@ exports.tokio = (title) => {
           collapsable: false,
           children: [
             'internals/intro',
-            'internals/net',
-            'internals/runtime-model'
+            'internals/runtime-model',
+            'internals/net'
           ]
         },
         'api'
