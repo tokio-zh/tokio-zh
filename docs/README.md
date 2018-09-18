@@ -4,7 +4,6 @@ heroImage: /imgs/tokio.png
 pageClass: front
 actionText: 开始
 actionLink: /document/
-footer: MIT Licensed | Copyright © 2018-present | krircc
 ---
 
 <div class="features">
