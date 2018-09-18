@@ -23,6 +23,16 @@ exports.tokio = (title) => {
             'working-with-framed-streams',
             'building-runtime'
           ]
-        }
+        },
+        {
+          title: '内部原理',
+          collapsable: false,
+          children: [
+            'internals/intro',
+            'internals/net',
+            'internals/runtime-model'
+          ]
+        },
+        'api'
     ]
 }

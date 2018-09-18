@@ -1,4 +1,6 @@
-# 生活中最美好的事情是分享
+# Tokio社区
+
+获得帮助，讨论问题，并加入乐趣
 
 Tokio社区最容易在其[gitter](https://gitter.im/tokio-rs/tokio)频道上找到，欢迎您提出问题，报告问题或提出想法。
 
