@@ -31,6 +31,7 @@ module.exports = {
           { text: '文档', link: '/document/' },
           { text: '社区', link: '/community/' },
           { text: '博客', link: '/blog/' },
+          { text: '论坛', link: 'http://ruster.xyz' },
           { text: '英文', link: 'https://tokio.rs' }
         ],
         sidebar: {
