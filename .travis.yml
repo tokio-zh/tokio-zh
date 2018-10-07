@@ -3,7 +3,7 @@ language: javascript
 install:
   - npm install -g n --force
   - which n
-  - n 8.9.0
+  - sudo n 8.9.0
   -
 
 cache:
