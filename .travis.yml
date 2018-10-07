@@ -17,7 +17,9 @@ matrix:
   include:
     - env:
       - TASK=build
-      script: ./node-v8.11.3-linux-x64/bin/npm install
+      script: 
+        - node -v && npm -v
+        - ./node-v8.11.3-linux-x64/bin/npm install
 
 deploy:
   provider: script
