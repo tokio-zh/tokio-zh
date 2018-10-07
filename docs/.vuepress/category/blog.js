@@ -1,7 +1,7 @@
 exports.blog = (title) => {
     return [
         '',
-        '2018-10-doc-blitz',
+        '2018-08-async-await',
         '2018-08-incremental-improvements',
         '2018-05-tokio-fs',
         '2018-03-tokio-runtime',
