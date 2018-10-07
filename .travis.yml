@@ -1,7 +1,7 @@
 language: javascript
 
 install:
-  - npm cache && npm install -g n --force
+  - npm install -g n --force
   - which n
   - n 8.9.0
   -
