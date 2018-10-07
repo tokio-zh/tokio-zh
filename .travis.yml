@@ -4,7 +4,7 @@ install:
   - npm install -g n --force
   - PATH=$PATH:/home/travis/.nvm/versions/node/v4.1.2/bin/n
   - echo $PATH
-  - sudo n 8.9.0
+  - n 8.9.0
   -
 
 cache:
