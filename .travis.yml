@@ -1,18 +1,19 @@
 language: javascript
 
-install:
-  - wget https://nodejs.org/dist/v8.9.0/node-v8.9.0-linux-x64.tar.xz && xz -d node-v8.9.0-linux-x64.tar.xz && tar -xvf node-v8.9.0-linux-x64.tar
-  - 
+# install:
+#   - wget https://nodejs.org/dist/v8.9.0/node-v8.9.0-linux-x64.tar.xz && xz -d node-v8.9.0-linux-x64.tar.xz && tar -xvf node-v8.9.0-linux-x64.tar
+#   - 
 
-cache:
-  directories:
-    - ./node_modules
+# cache:
+#   directories:
+#     - ./node_modules
 
 matrix:
   include:
     - env:
       - TASK=build
-      script: ./node-v8.9.0-linux-x64/bin/npm install
+      # script: ./node-v8.9.0-linux-x64/bin/npm install
+      script: npm install
 
 deploy:
   provider: script
