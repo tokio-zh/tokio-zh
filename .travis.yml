@@ -1,7 +1,7 @@
 language: javascript
 
 before_install:
-     - chmod 0777 /usr/local/
+  - sudo chmod 0777 /usr/local/
 
 install:
   - npm install -g n --force
