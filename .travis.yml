@@ -1,9 +1,11 @@
 language: javascript
 
+before_install:
+     - chmod 0777 /usr/local/
+
 install:
   - npm install -g n --force
   - PATH=$PATH:/home/travis/.nvm/versions/node/v4.1.2/bin/n
-  - echo $PATH
   - n 8.9.0
   -
 

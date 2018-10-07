@@ -4,7 +4,7 @@
 set -e
 
 # 生成静态文件
-./node-v8.11.3-linux-x64/bin/npm run build
+npm run build
 
 
 if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" == "master" ]]; then
