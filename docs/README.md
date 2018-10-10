@@ -2,7 +2,7 @@
 home: true
 heroImage: /imgs/tokio.png
 pageClass: front
-actionText: 开始
+actionText: QQ群570065685
 actionLink: /document/
 ---
 
