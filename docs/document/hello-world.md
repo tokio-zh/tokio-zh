@@ -1,10 +1,12 @@
 # Hello World
 
-为了开始我们的Tokio之旅，我们将从强制性的“hello world”示例开始。 此服务器将侦听传入连接。 收到连接后，它会向客户端写入“hello world”并关闭连接。
+为了开始我们的Tokio之旅，我们先从我们必修的“hello world”示例开始。 这个程序将会创建一个TCP流并且写入＂hello,world＂到其中．这与写入非Tokio TCP流的Rust程序之间的区别在于该程序在创建流或者将"hello,world"的时候并不会阻塞程序的执行．
+
+在开始之前你应该对TCP流的工作方式有一定的了解，相信理解[rust标准库](https://doc.rust-lang.org/std/net/struct.TcpStream.html)实现会对你有很大的帮助
 
 让我们开始吧。
 
-首先，生成一个新的箱子。
+首先，生成一个新的crate。
 ```bash
 $ cargo new --bin hello-world
 $ cd hello-world
@@ -19,62 +21,46 @@ tokio = "0.1"
 在`main.rs`中的引入包和类型：
 
 ```rust
-#![deny(deprecated)]
 extern crate tokio;
 
 use tokio::io;
-use tokio::net::TcpListener;
+use tokio::net::TcpStream;
 use tokio::prelude::*;
-fn main() {}
 ```
 
-## 编写服务器
+## 创建流
 
-第一步是将`TcpListener`绑定到本地端口。我们使用Tokio提供的`TcpListener`实现。
+第一步是创建TcpStream.我们将使用Tokio实现的TcpStream.
 
 ```rust
-#![deny(deprecated)]
-extern crate tokio;
-#
-use tokio::io;
-use tokio::net::TcpListener;
-use tokio::prelude::*;
 fn main() {
+    // Parse the address of whatever server we're talking to
     let addr = "127.0.0.1:6142".parse().unwrap();
-    let listener = TcpListener::bind(&addr).unwrap();
+    let stream = TcpStream::connect(&addr);
 
     // Following snippets come here...
 }
 ```
 
-接下来，我们定义服务器任务。此异步任务将侦听传入绑定侦听器上的连接并处理每个接受的连接。
+接下来，我们定义服务器任务。此异步任务将创建一个流，然后一旦它被用于其他的处理程序就生成流．
 
 ```rust
-#![deny(deprecated)]
-extern crate tokio;
-#
-use tokio::io;
-use tokio::net::TcpListener;
-use tokio::prelude::*;
-fn main() {
-    let addr = "127.0.0.1:6142".parse().unwrap();
-    let listener = TcpListener::bind(&addr).unwrap();
-let server = listener.incoming().for_each(|socket| {
-    println!("accepted socket; addr={:?}", socket.peer_addr().unwrap());
+let hello_world = TcpStream::connect(&addr).and_then(|stream| {
+    println("created stream");
 
-    // Process socket here.
+    //Process stream here
 
     Ok(())
 })
 .map_err(|err| {
-    // All tasks must have an `Error` type of `()`. This forces error
-    // handling and helps avoid silencing failures.
-    //
-    // In our example, we are only going to log the error to STDOUT.
-    println!("accept error = {:?}", err);
+    // All tasks must have an 'Error' type of '()'. This forces error
+    // handing and helps avoid silencing failures.
+    println!("connection error = {:?}",err);
 });
-}
 ```
+TcpStream::
+
+
 
 组合函数用于定义异步任务。调用`listener.incoming（）`返回已接受连接的[`Stream`]。  [`Stream`]有点像异步迭代器。
 
