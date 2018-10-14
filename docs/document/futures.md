@@ -1,12 +1,12 @@
 # Futures
 
-在指南早期暗示的`future`是用于管理异步逻辑的构建块。 它们是Tokio使用的底层异步抽象。
+在本指南早期提到的`future`是用于管理异步逻辑的构建块。 它们是Tokio使用的底层异步抽象。
 
-`future`的实施由`future` `crate`提供。 但是，为方便起见，Tokio重新导出了许多类型。
+`future`的实现由`future`crate提供。 但是，为方便起见，Tokio重新导出了许多类型。
 
-## Futures是什么
+## Futures是什么？
 
-future是表示异步计算完成的值。通常，由于系统中某处发生的事件使`future`完成。虽然我们从基本I / O的角度看待事物，但您可以使用`future`来表示各种事件，例如：
+future是表示异步计算完成的值。通常，由于系统中某处发生的事件使`future`完成。虽然我们从基本I/O的角度看待事物，但您可以使用`future`来表示各种事件，例如：
 
 * 在线程池中执行的数据库查询。当数据库查询完成时，`future` 完成，其值是查询的结果。
 
@@ -16,9 +16,9 @@ future是表示异步计算完成的值。通常，由于系统中某处发生�
 
 * 在线程池上运行的长时间运行的CPU密集型任务。任务完成后，`future` 完成，其值为任务的返回值。
 
-* 从套接字读取字节。当字节准备就绪时，`future`就完成了 - 根据缓冲策略，字节可能直接返回，或作为副作用写入某个现有缓冲区。
+* 从套接字读取字节。当字节准备就绪时，`future`就完成了 - 根据缓冲策略，字节可能直接返回，或作为额外影响写入某个现有缓冲区。
 
-`future`抽象的整个要点是允许异步函数，即不能立即返回值的函数，将会返回一些东西。
+`future`抽象的整个要点是允许异步函数，即不能立即返回值的函数，但是返回一些东西。
 
 例如，异步HTTP客户端可以提供如下所示的get函数：
 
@@ -45,7 +45,7 @@ track_response_success(response_is_ok);
 
 所有与`future`一起采取的行动都不会立即执行任何工作。他们不能，因为他们没有实际的HTTP响应。相反，他们定义了响应`future`完成时要完成的工作。
 
-`future` `crate`和Tokio都有一系列组合功能，可以用来处理`future`。
+`future` crate和Tokio都有一系列组合功能，可以用来处理`future`。
 
 ## 实现`future`
 
@@ -70,9 +70,7 @@ trait Future {
 }
 ```
 
-您可能会注意到这与用于实现异步任务的`trait`完全相同。 这是因为一旦计算完成，异步任务就是“正好”的`future`，其值为（）。
-
-通常，当您实现Future时，您将定义一个由子（或内部）`future`组成的计算。 在这种情况下，`future`的实现会尝试调用内部`future`，如果内部`future`未准备好，则返回NotReady。
+通常，当您实现Future时，您将定义一个由子（或内部）`future`组成的计算。 在这种情况下，`future`的实现会尝试调用内部`future`，如果内部`future`未准备好，则返回`NotReady`。
 
 以下示例是由另一个返回`usize`并将使该值加倍的`future`组成的`future`：
 
@@ -100,9 +98,9 @@ where T: Future<Item = usize>
 }
 ```
 
-当Doubler`future`被轮询时，它会调查其内在的`future`。 如果内部`future`尚未准备好，Doubler future将返回NotReady。 如果内心的`future`已经准备就绪，那么Doubler的`future`会使返回值加倍并返回Ready。
+当Doubler`future`被轮询时，它会调查其内在的`future`。 如果内部`future`尚未准备好，Doubler future将返回`NotReady`。 如果里面的的`future`已经准备就绪，那么Doubler的`future`会使返回值加倍并返回Ready。
 
-因为上面的匹配模式很常见，所以`future` `crate`提供了一个宏：try_ready！。 它类似于`try！` 或`？`，但它也返回NotReady。 上面的poll函数可以使用try_ready重写！ 如下：
+因为上面的匹配模式很常见，所以`future` crate提供了一个宏：try_ready！。 它类似于`try！` 或`？`，但它也返回NotReady。 上面的poll函数可以使用try_ready重写！ 如下：
 
 ```rust
 fn poll(&mut self) -> Result<Async<usize>, T::Error> {
@@ -115,13 +113,11 @@ fn poll(&mut self) -> Result<Async<usize>, T::Error> {
 
 当一个任务返回NotReady时，一旦它转换到就绪状态，执行者就会被通知。这使执行者能够有效地调度任务。
 
-当函数返回Async :: NotReady时，在状态转换为“就绪”时通知执行程序至关重要。否则，任务将无限挂起，永远不会再次运行。
+当函数返回`Async::NotReady`时，在状态转换为“就绪”时通知执行程序至关重要。否则，任务将无限挂起，永远不会再次运行。
 
-对于大多数`future`的实现，这是可传递的。当`future`实施是子`future`的组合时，当至少一个内部`future`返回NotReady时，外部`future`仅返回NotReady。因此，一旦内部`future`转变为就绪状态，外部`future`将转变为就绪状态。在这种情况下，NotReady合约已经满足，因为内部`future`将在准备就绪时通知执行者。
+对于大多数`future`的实现，这是可传递的。当`future`实施是子`future`的组合时，当至少一个内部`future`返回NotReady时，外部`future`仅返回`NotReady`。因此，一旦内部`future`转变为就绪状态，外部`future`将转变为就绪状态。在这种情况下，NotReady合约已经满足，因为内部`future`将在准备就绪时通知执行者。
 
-最内层的`future`，有时也被称为“资源”，是负责通知执行人的人。这是通过对`task :: current（）`返回的任务调用`notify`来完成的。
-
-在执行者调用任务轮询之前，它将任务上下文设置为线程局部变量。然后，最内部的`future`从线程本地访问上下文，以便一旦其准备状态改变就能够通知任务。
+最内层的`future`，有时也被称为“资源”，是负责通知执行人的人。这是通过对`task::current（）`返回的任务调用`notify`来完成的。
 
 我们将在后面的部分中更深入地探索实施资源和任务系统。**除非你从内部的`future`获得NotReady，否则这里的关键是不要返回NotReady**
 
@@ -138,7 +134,7 @@ pub fn resolve(host: &str) -> ResolveFuture;
 实现`future`的步骤是：
 
 1. 调用`resolve`以获取`ResolveFuture`实例。
-2. 调用`ResolveFuture :: poll`直到它返回一个`SocketAddr`。
+2. 调用`ResolveFuture::poll`直到它返回一个`SocketAddr`。
 3. 将`SocketAddr`传递给`TcpStream :: connect`。
 4. 调用`ConnectFuture :: poll`直到它返回`TcpStream`。
 5. 使用`TcpStream`完成外部`future`。
@@ -198,11 +194,13 @@ impl Future for ResolveAndConnect {
 1. `Resolving`
 2. `Connecting`
 
-每次调用poll时，我们都会尝试将状态机推进到下一个状态。
+每次调用`poll`时，我们都会尝试将状态机推进到下一个状态。
 
-现在，我们刚刚实现的`future`基本上是AndThen，所以我们可能只是使用该组合器而不是重新实现它。
+现在，我们刚刚实现的`future`基本上是组合器`AndThen`，所以我们可能只是使用该组合器而不是重新实现它。
 
 ```rust
 resolve(my_host)
     .and_then(|addr| TcpStream::connect(&addr))
 ```
+
+这个能使完成同样的事情的前提下代码更短．
