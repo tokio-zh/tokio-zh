@@ -1,28 +1,28 @@
 # Tokio与I/O
 
-tokio crate带有TCP和UDP网络类型。 与std中的类型不同，Tokio的网络类型基于轮询模型，并在其准备状态发生变化（接收数据并刷写写入缓冲区）时通知任务执行程序。 在tokio :: net模块中，您将找到TcpListener，TcpStream和UdpSocket等类型。
+tokio crate带有TCP和UDP网络类型。 与`std`中的类型不同，Tokio的网络类型基于轮询模型，并在其准备状态发生变化（接收数据并刷写写入缓冲区）时通知任务执行程序。 在`tokio::net`模块中，您将找到`TcpListener`，`TcpStream`和`UdpSocket`等类型。
 
-所有这些类型都提供了`future`的API以及poll API。
+所有这些类型都提供了future的API以及poll API。
 
-Tokio网络类型由基于Mio的反应器提供动力，默认情况下，它在后台线程上懒洋洋地启动。 有关详细信息，请参阅reactor文档。
+Tokio网络类型由基于[Mio](https://docs.rs/mio/)的反应器提供支持，默认情况下，它在后台线程上懒洋洋地启动。 有关详细信息，请参阅[reactor](https://docs.rs/tokio/0.1/tokio/reactor/index.html)文档。
 
-使用Future API
-我们已经在本指南的前面已经看到了一些传入函数以及tokio_io :: io中的助手。
+## 使用Future API
+我们已经在本指南的前面已经看到了[incoming](https://docs.rs/tokio/0.1/tokio/net/struct.TcpListener.html#method.incoming)函数以及[tokio_io::io](https://docs.rs/tokio/0.1/tokio/io/index.html)中的助手。
 
 这些助手包括：
 
-* incoming：入站TCP连接流。
-* read_exact：准确读取n个字节到缓冲区。
-* read_to_end：将所有字节读入缓冲区。
-* write_all：写入缓冲区的全部内容。
-* copy：将字节从一个I / O句柄复制到另一个I / O句柄。
+* [incoming](https://docs.rs/tokio/0.1/tokio/net/struct.TcpListener.html#method.incoming)：入站TCP连接流。
+* [read_exact](https://docs.rs/tokio/0.1/tokio/io/fn.read_exact.html)：准确读取n个字节到缓冲区。
+* [read_to_end](https://docs.rs/tokio/0.1/tokio/io/fn.read_to_end.html)：将所有字节读入缓冲区。
+* [write_all](https://docs.rs/tokio/0.1/tokio/io/fn.write_all.html)：写入缓冲区的全部内容。
+* [copy](https://docs.rs/tokio/0.1/tokio/io/fn.copy.html)：将字节从一个I/O句柄复制到另一个I/O句柄。
 
 很多这些函数/帮助程序都是AsyncRead和AsyncWrite特性的通用函数。这些特征类似于std的Read和Write，但仅适用于“`future`感知”的类型，即遵循强制属性：
 
 * 调用读取或写入是非阻塞的，它们永远不会阻塞调用线程。
-* 如果一个调用会以其他方式阻塞，那么会返回一个带有此类WillBlock的错误。如果发生这种情况，则当前`future`的任务计划在I / O再次准备就绪时接收通知（取消停放）
+* 如果一个调用会以其他方式阻塞，那么会返回一个带有此类WillBlock的错误。如果发生这种情况，则当前`future`的任务计划在I/O再次准备就绪时接收通知（取消停放）
   
-**请注意** AsyncRead和AsyncWrite类型的用户应使用poll_read和poll_write，而不是直接调用read和write。
+**请注意** AsyncRead和AsyncWrite类型的用户应使用[poll_read](https://docs.rs/tokio/0.1/tokio/io/trait.AsyncRead.html#method.poll_read)和[poll_write](https://docs.rs/tokio/0.1/tokio/io/trait.AsyncWrite.html#method.poll_write)，而不是直接调用read和write。
 
 例如，以下是如何接受连接，从它们读取5个字节，然后将5个字节写回套接字：
 
@@ -105,7 +105,7 @@ impl Future for ReadExact {
 
 ## 数据报(Datagrams)
 
-**请注意** ，大多数讨论都是围绕I / O或字节流进行的，而UDP重要的不是！ 但是，为了适应这种情况，UdpSocket类型还提供了许多方便的方法：
+**请注意** ，大多数讨论都是围绕I/O或字节流进行的，而UDP是不重要的！ 但是，为了适应这种情况，[UdpSocket](https://docs.rs/tokio/0.1/tokio/net/struct.UdpSocket.html)类型还提供了许多方便的方法：
 
-* `send_dgram`允许您表示将数据报作为`future`发送，如果无法立即发送整个数据报，则返回错误。
-* `recv_dgram`表示将数据报读入缓冲区，产生缓冲区和来自的地址。
+* [send_dgram](https://docs.rs/tokio/0.1/tokio/net/struct.UdpSocket.html#method.send_dgram)允许您表示将数据报作为`future`发送，如果无法立即发送整个数据报，则返回错误。
+* [recv_dgram](https://docs.rs/tokio/0.1/tokio/net/struct.UdpSocket.html#method.recv_dgram)表示将数据报读入缓冲区，产生缓冲区和来自的地址。
