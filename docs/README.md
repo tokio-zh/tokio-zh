@@ -57,5 +57,5 @@ actionLink: /document/
     <a href="#">QQ群570065685</a>
 </div>
 
-<p>Tokio是由我们的@carllerche和贡献者所有的爱和帮助下构建</p>
+<p>Tokio是由我们的@carllerche和贡献者所有的爱和帮助下构建的</p>
 <br>
