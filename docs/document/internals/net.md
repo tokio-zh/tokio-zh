@@ -294,8 +294,8 @@ driver需要运行才能使其相关资源正常工作。如果driver无法运�
 
 2)发送所有事件到适当的注册过的资源。
 
-[`mio :: Poll`]: https：//docs.rs/mio/0.6/mio/struct.Poll.html
-[`Poll :: poll`]: https：//docs.rs/mio/0.6/mio/struct.Poll.html#method.poll
+[`mio::Poll`]: https://docs.rs/mio/0.6/mio/struct.Poll.html
+[`Poll::poll`]: https://docs.rs/mio/0.6/mio/struct.Poll.html#method.poll
 
 上面的步骤是通过调用`Reactor :: turn`来完成的。循环部分是取决于我们。这通常在后台线程中完成或嵌入`executor`中作为一个[`Park`]实现。有关详细信息，请参阅[runtime guide]。
 
