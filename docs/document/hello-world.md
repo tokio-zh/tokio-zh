@@ -1,6 +1,6 @@
 # Hello World
 
-为了开始我们的Tokio之旅，我们先从我们必修的“hello world”示例开始。 这个程序将会创建一个TCP流并且写入＂hello,world＂到其中．这与写入非Tokio TCP流的Rust程序之间的区别在于该程序在创建流或者将"hello,world"的时候并不会阻塞程序的执行．
+为了开始我们的Tokio之旅，我们先从我们必修的"hello world"示例开始。 这个程序将会创建一个TCP流并且写入＂hello,world＂到其中．这与写入非Tokio TCP流的Rust程序之间的区别在于该程序在创建流或者将"hello,world"的时候并不会阻塞程序的执行．
 
 在开始之前你应该对TCP流的工作方式有一定的了解，相信理解[rust标准库](https://doc.rust-lang.org/std/net/struct.TcpStream.html)实现会对你有很大的帮助
 
@@ -27,6 +27,7 @@ use tokio::io;
 use tokio::net::TcpStream;
 use tokio::prelude::*;
 ```
+这里我们使用`tokio`自己io和net模块。这些模块提供与网络和I/O操作相同的抽象，与std相应的模块 有很小的差别; 所有操作都是异步执行的。
 
 ## 创建流
 
@@ -58,92 +59,85 @@ let hello_world = TcpStream::connect(&addr).and_then(|stream| {
     println!("connection error = {:?}",err);
 });
 ```
-TcpStream::
+对`TcpStream :: connect`的调用返回创建的TCP流的[`Future`]。我们将在后面的指南中详细了解[`Futures`]，但是现在您可以将aFuture视为表示将来最终会发生的事情的值（在这种情况下将创建流）。这意味着`TcpStream :: connect`可以不等待它返回之前创建流。而是立即返回一个表示创建TCP流工作的值。当这项工作真正执行时，我们会在下面看到 。
+
+`and_then`方法在创建流后生成流。 `and_then`是一个组合函数的示例，用于定义如何处理异步工作。
+
+每个组合器函数都获得必要状态的所有权以及执行的回调，并返回具有附加"步骤"的新Future。这个Future是表示将在某个时间点完成的某些计算的值。
+
+值得重申的是，返回的Future是懒惰的，即在调用组合子时不会执行任何工作。相反，一旦所有异步步骤都被排序，最终Future（表示整个任务）就"生成"（即运行）。这是先前定义的工作开始运行的时间。换句话说，到目前为止我们编写的代码实际上并没有创建TCP流。
+
+稍后我们将更多地探讨futures（以及streams和sinks的相关概念）。
+
+同样重要的是要注意，在我们实际运行未来之前，我们已经调用`map_err`来转换我们可能遇到的任何错误`()`。这可以确保我们承认错误。
+
+接下来，我们将处理流。
 
 
-
-组合函数用于定义异步任务。调用`listener.incoming（）`返回已接受连接的[`Stream`]。  [`Stream`]有点像异步迭代器。
-
-每个组合函数都具有必要状态的所有权回调执行并返回一个新的`Future`或`Stream`额外的“步骤”序列。
-
-返回的 `future`和 `Stream`是懒惰的，即在呼叫时不执行任何工作。相反，一旦所有异步步骤都被序列化，那么最终的`Future`（代表任务）是在执行者(executor)产生。这是开始运行时候定义的工作。
-
-我们将在以后挖掘`Future`和`Stream`。
-
-## 产生任务
-
-执行程序负责调度异步任务，驱动它们完成。有许多执行器实现可供选择，每个都有不同的利弊。在这个例子中，我们将使用`Tokio runtime`。
-
-Tokio运行时是异步应用程序的预配置运行时。它包括一个线程池作为默认执行程序。此线程池已调整为用于异步应用程序。
-
-```rust
-#![deny(deprecated)]
-extern crate tokio;
-extern crate futures;
-#
-use tokio::io;
-use tokio::net::TcpListener;
-use tokio::prelude::*;
-use futures::future;
-fn main() {
-let server = future::ok(());
-
-println!("server running on localhost:6142");
-tokio::run(server);
-}
-```
-
-`tokio :: run`启动运行时，阻塞当前线程直到所有生成的任务都已完成，所有资源（如TCP套接字）都已完成
-销毁。使用[`tokio :: spawn`] **生成任务必须**从内部发生`runtime`的上下文。
-
-到目前为止，我们只在执行程序上运行一个任务，所以`server`任务是唯一阻止`run`返回。
-
-接下来，我们将处理入站套接字。
 
 ## 写入数据
 
-我们的目标是在每个接受的套接字上写上“hello world \ n”。我们会通过定义一个新的异步任务在相同的`current_thread`执行者上执行写入和生成该任务。
+我们的目标是写入"hello world\n"流。
 
-回到`incoming().for_each`块。
+回到`TcpStream::connect(addr).and_then`块。
 
 ```rust
-#![deny(deprecated)]
-extern crate tokio;
-#
-use tokio::io;
-use tokio::net::TcpListener;
-use tokio::prelude::*;
-fn main() {
-    let addr = "127.0.0.1:6142".parse().unwrap();
-    let listener = TcpListener::bind(&addr).unwrap();
-let server = listener.incoming().for_each(|socket| {
-    println!("accepted socket; addr={:?}", socket.peer_addr().unwrap());
+let client = TcpStream::connect(&addr).and_then(|stream| {
+    println!("created stream");
 
-    let connection = io::write_all(socket, "hello world\n")
-        .then(|res| {
-            println!("wrote message; success={:?}", res.is_ok());
-            Ok(())
-        });
-
-    // Spawn a new task that processes the socket:
-    tokio::spawn(connection);
-
-    Ok(())
+    io::write_all(stream, "hello world\n").then(|result| {
+      println!("wrote to stream; success={:?}", result.is_ok());
+      Ok(())
+    })
 })
-;
-}
 ```
 
-我们正在定义另一个异步任务。这项任务将取得所有权socket，在该套接字上写入消息，然后完成。 `connection`变量保存最后的任务。同样，还没有完成任何工作。
+[`io :: write_all`]函数获取`stream`的所有权，在整个消息写入后返回[`Future`]完成流。 `then`用于对写入完成后运行的步骤进行排序。 在我们的例子中，我们只是向`STDOUT`写一条消息来表示写完了。
 
-`tokio :: spawn`用于在运行时生成任务。因为`server` future在运行时运行，我们可以产生更多的任务。如果从运行时外部调用，`tokio :: spawn`将会发生混乱。
+注意`result`是一个包含原始流的`Result`。 这允许我们对相同的流进行附加读取或写入。 但是，我们没有其他任何事情要做，所以我们只删除流，然后自动关闭它。
 
-[`io :: write_all`]函数获取`socket`的所有权，返回[`Future`]在整个消息写入后完成。 `then`用于对写入后运行的步骤进行排序完成。在我们的例子中，我们只是向`STDOUT`写一条消息来表示写完了。
+## 运行客户端任务
 
-请注意，`res`是包含原始套接字的`Result`。 这允许我们在同一个套接字上对其他读取或写入进行排序。 但是，我们没有其他任何事情可做，所以我们只需删除套接字即可关闭套接字。
+到目前为止，我们已经`Future`代表了我们的程序要完成的工作，但我们实际上还没有运行它。我们需要一种方法来"产生"这种工作。我们需要一个执行者。
 
-你可以在这里找到完整的[例子](https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs)
+执行程序负责调度异步任务，使其完成。有许多执行器实现可供选择，每个都有不同的优缺点。在此示例中，我们将使用`Tokio`运行时([Tokio runtime][rt])的默认执行 程序。
+
+```rust
+println!("About to create the stream and write to it...");
+tokio::run(client);
+println!("Stream has been created and written to.");
+```
+
+`tokio::run `启动运行时，阻止当前线程，直到所有生成的任务完成并且所有资源（如文件和套接字）都已被删除。
+
+到目前为止，我们只在执行程序上运行了一个任务，因此该`client`任务是阻止`run`返回的唯一任务。一旦`run`返回，我们可以确定我们的未来已经完成。
+
+你可以在这里[here][full-code]找到完整的例子。
+
+## 运行代码
+[Netcat]是一种从命令行快速创建TCP套接字的工具。以下命令在先前指定的端口上启动侦听TCP套接字。
+
+```bash
+$ nc -l -p 6142
+```
+
+在不同的终端，我们将运行我们的项目。
+
+```bash
+$ cargo run
+```
+
+如果一切顺利，你应该看到`hello world`从`Netcat`打印出来。
+
 
 ## 下一步
 
 本指南的下一页将开始深入研究Tokio运行时模型。
+
+[`Future`]: {{< api-url "futures" >}}/future/trait.Future.html
+[rt]: {{< api-url "tokio" >}}/runtime/index.html
+[`io`]: {{< api-url "tokio" >}}/io/index.html
+[`net`]: {{< api-url "tokio" >}}/net/index.html
+[`io::write_all`]: {{< api-url "tokio-io" >}}/io/fn.write_all.html
+[full-code]: https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs
+[Netcat]: http://netcat.sourceforge.net/
