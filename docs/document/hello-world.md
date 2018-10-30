@@ -27,7 +27,7 @@ use tokio::io;
 use tokio::net::TcpStream;
 use tokio::prelude::*;
 ```
-这里我们使用`tokio`自己io和net模块。这些模块提供与网络和I/O操作相同的抽象，与std相应的模块 有很小的差别; 所有操作都是异步执行的。
+这里我们使用`tokio`自己[`io`]和[`net`]模块。这些模块提供与网络和I/O操作相同的抽象，与std相应的模块 有很小的差别; 所有操作都是异步执行的。
 
 ## 创建流
 
@@ -92,7 +92,7 @@ let client = TcpStream::connect(&addr).and_then(|stream| {
 })
 ```
 
-[`io :: write_all`]函数获取`stream`的所有权，在整个消息写入后返回[`Future`]完成流。 `then`用于对写入完成后运行的步骤进行排序。 在我们的例子中，我们只是向`STDOUT`写一条消息来表示写完了。
+[`io::write_all`]函数获取`stream`的所有权，在整个消息写入后返回[`Future`]完成流。 `then`用于对写入完成后运行的步骤进行排序。 在我们的例子中，我们只是向`STDOUT`写一条消息来表示写完了。
 
 注意`result`是一个包含原始流的`Result`。 这允许我们对相同的流进行附加读取或写入。 但是，我们没有其他任何事情要做，所以我们只删除流，然后自动关闭它。
 
@@ -134,10 +134,16 @@ $ cargo run
 
 本指南的下一页将开始深入研究Tokio运行时模型。
 
-[`Future`]: {{< api-url "futures" >}}/future/trait.Future.html
-[rt]: {{< api-url "tokio" >}}/runtime/index.html
-[`io`]: {{< api-url "tokio" >}}/io/index.html
-[`net`]: {{< api-url "tokio" >}}/net/index.html
-[`io::write_all`]: {{< api-url "tokio-io" >}}/io/fn.write_all.html
+[`Future`]: https://docs.rs/futures/0.1/futures/future/trait.Future.html
+
+[rt]: https://docs.rs/tokio/0.1/tokio/runtime/index.html
+
+[`io`]: https://docs.rs/tokio/0.1/tokio/io/index.html
+
+[`net`]: https://docs.rs/tokio/0.1/tokio/net/index.html
+
+[`io::write_all`]: https://docs.rs/tokio-io/0.1/tokio_io/io/fn.write_all.html/io/fn.write_all.html
+
 [full-code]: https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs
+
 [Netcat]: http://netcat.sourceforge.net/
