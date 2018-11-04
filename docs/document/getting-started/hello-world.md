@@ -7,10 +7,12 @@
 让我们开始吧。
 
 首先，生成一个新的crate。
+
 ```bash
-$ cargo new --bin hello-world
-$ cd hello-world
+cargo new --bin hello-world
+cd hello-world
 ```
+
 接下来，添加必要的依赖项：
 
 ```toml
@@ -27,6 +29,7 @@ use tokio::io;
 use tokio::net::TcpStream;
 use tokio::prelude::*;
 ```
+
 这里我们使用`tokio`自己[`io`]和[`net`]模块。这些模块提供与网络和I/O操作相同的抽象，与std相应的模块 有很小的差别; 所有操作都是异步执行的。
 
 ## 创建流
@@ -59,6 +62,7 @@ let hello_world = TcpStream::connect(&addr).and_then(|stream| {
     println!("connection error = {:?}",err);
 });
 ```
+
 对`TcpStream :: connect`的调用返回创建的TCP流的[`Future`]。我们将在后面的指南中详细了解[`Futures`]，但是现在您可以将aFuture视为表示将来最终会发生的事情的值（在这种情况下将创建流）。这意味着`TcpStream :: connect`可以不等待它返回之前创建流。而是立即返回一个表示创建TCP流工作的值。当这项工作真正执行时，我们会在下面看到 。
 
 `and_then`方法在创建流后生成流。 `and_then`是一个组合函数的示例，用于定义如何处理异步工作。
@@ -72,8 +76,6 @@ let hello_world = TcpStream::connect(&addr).and_then(|stream| {
 同样重要的是要注意，在我们实际运行未来之前，我们已经调用`map_err`来转换我们可能遇到的任何错误`()`。这可以确保我们承认错误。
 
 接下来，我们将处理流。
-
-
 
 ## 写入数据
 
@@ -108,27 +110,27 @@ tokio::run(client);
 println!("Stream has been created and written to.");
 ```
 
-`tokio::run `启动运行时，阻止当前线程，直到所有生成的任务完成并且所有资源（如文件和套接字）都已被删除。
+在`tokio::run`启动运行时，阻止当前线程，直到所有生成的任务完成并且所有资源（如文件和套接字）都已被删除。
 
 到目前为止，我们只在执行程序上运行了一个任务，因此该`client`任务是阻止`run`返回的唯一任务。一旦`run`返回，我们可以确定我们的未来已经完成。
 
 你可以在这里[here][full-code]找到完整的例子。
 
 ## 运行代码
+
 [Netcat]是一种从命令行快速创建TCP套接字的工具。以下命令在先前指定的端口上启动侦听TCP套接字。
 
 ```bash
-$ nc -l -p 6142
+nc -l -p 6142
 ```
 
 在不同的终端，我们将运行我们的项目。
 
 ```bash
-$ cargo run
+cargo run
 ```
 
 如果一切顺利，你应该看到`hello world`从`Netcat`打印出来。
-
 
 ## 下一步
 
