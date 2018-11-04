@@ -212,7 +212,7 @@ impl Future for Server {
 
 通知发生在任务级别。 该任务不知道哪个子`future`触发了通知。 因此，无论何时轮询任务，都必须尝试轮询所有子`future`。
 
-![task](https://rustlang-cn.github.io/assets/img/task-layout.14e684d0.png)
+![task](../../../../static/imgs/task-layout.png)
 
 在此任务中，有三个子`future`可以进行轮询。 如果其中一个子`future`所包含的资源转为“就绪”，则任务本身会收到通知，并会尝试轮询其所有三个子`future`。 其中一个将推进，这反过来推进任务的内部状态。
 
