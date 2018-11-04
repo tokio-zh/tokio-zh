@@ -1,14 +1,14 @@
 # 示例：聊天服务器
 
-我们将使用到目前为止已经涵盖的内容来构建聊天服务器。 这是一个有一定份量的Tokio服务器应用程序。
+我们将使用到目前为止已经涵盖的内容来构建聊天服务器。 这是一个非平凡的Tokio服务器应用程序。
 
-服务器将使用基于行的协议。 行以`\r\n`结束。 这与telnet兼容，因此我们只使用telnet作为客户端。 当客户端连接时，它必须通过发送包含其“昵称”的行来标识自己（即，用于在其 `Peer`中标识客户端的某个名称）。
+服务器将使用基于行的协议。 行以`\ r \ n`结束。 这与telnet兼容，因此我们只使用telnet作为客户端。 当客户端连接时，它必须通过发送包含其“缺口”的行来标识自己（即，用于在其 `Peer`中标识客户端的某个名称）。
 
 识别出客户端后，所有发送的行都以[nick]:为前缀,并广播给所有其他连接的客户端。
 
 完整的代码可以在[这里](https://github.com/tokio-rs/tokio/blob/master/examples/chat.rs)找到。 请注意，Tokio提供了一些尚未涵盖的额外抽象，这些抽象将使聊天服务器能够用更少的代码编写。
 
-首先，生成一个新的crate。
+首先，生成一个新的箱子。
 
 ```rust
 $ cargo new --bin line-chat
@@ -24,8 +24,6 @@ tokio-io = "0.1"
 futures = "0.1"
 bytes = "0.4"
 ```
-
-和一些crates和类型到`main.rs`
 
 ```rust
 extern crate tokio;
@@ -53,7 +51,7 @@ type Rx = mpsc::UnboundedReceiver<Bytes>;
 
 现在，我们为服务器设置必要的结构。 这些步骤与Hello World中使用的步骤相同！ 例：
 
-* 将`TcpListener`绑定到本地端口。
+* 将TcpListener绑定到本地端口。
 * 定义接受入站连接并处理它们的任务。
 * 启动Tokio运行时
 * 产生服务器任务。
@@ -90,11 +88,11 @@ fn main() {
 
 ## Chat State
 
-聊天服务器要求从一个客户端接收的消息被广播到所有其他连接的客户端。 这将使用通过[mpsc](https://docs.rs/futures/0.1/futures/sync/mpsc/index.html)通道传递的消息来完成。
+聊天服务器要求从一个客户端接收的消息被广播到所有其他连接的客户端。 这将使用通过mpsc通道传递的消息来完成。
 
 每个客户端套接字都将由任务管理。 每个任务都有一个关联的mpsc通道，用于接收来自其他客户端的消息。 所有这些通道的发送一半存储在Rc单元中以使它们可访问。
 
-在这个例子中，我们将使用`unbounded`通道。 理想情况下，渠道永远不应该是无限制的，但在这种情况下处理backpressure有点棘手。 我们将把通道限制在后面专门用于处理backpressure的部分。
+在这个例子中，我们将使用无界通道。 理想情况下，渠道永远不应该是无限制的，但在这种情况下处理背压有点棘手。 我们将把通道限制在后面专门用于处理背压的部分。
 
 以下是共享状态的定义方式（上面已完成Tx类型别名）：
 
@@ -131,11 +129,11 @@ fn process(socket: TcpStream, state: Arc<Mutex<Shared>>) {
 }
 ```
 
-对`tokio::spawn`的调用将在当前的Tokio运行时生成一个新任务。 所有工作线程都保留对存储在线程局部变量中的当前运行时的引用。 注意，尝试从Tokio运行时外部调用`tokio::spawn`将导致panic。
+对tokio :: spawn的调用将在当前的Tokio运行时生成一个新任务。 所有工作线程都保留对存储在线程局部变量中的当前运行时的引用。 注意，尝试从Tokio运行时外部调用tokio :: spawn将导致恐慌。
 
-所有连接处理逻辑必须能够理解协议。 该协议是基于行的，由`\r\n`终止。 它不是在字节流级别工作，而是更容易工作的的帧，即使用表示原子消息的值。
+所有连接处理逻辑必须能够理解协议。 该协议是基于行的，由\ r \ n终止。 它不是在字节流级别工作，而是更容易在帧级工作，即使用表示原子消息的值。
 
-我们实现了一个包含套接字的编解码器，并公开了一个生产和消费行的API。
+我们实现了一个包含套接字的编解码器，并公开了一个采用和消耗行的API。
 
 ## 线性编解码器
 
@@ -224,9 +222,9 @@ impl Lines {
 }
 ```
 
-该示例使用[bytes](https://docs.rs/bytes/0.4/bytes)中的[BytesMut](https://docs.rs/bytes/0.4/bytes/struct.BytesMut.html)。 这为在网络环境中处理字节序列提供了一些很好的实用程序。 [Stream](https://docs.rs/futures/0.1/futures/stream/trait.Stream.html)实现产生的`BytesMut`值只包含一行。
+该示例使用字节包中的BytesMut。 这为在网络环境中处理字节序列提供了一些很好的实用程序。 Stream实现产生的BytesMut值只包含一行。
 
-与往常一样，实现返回Async的函数的关键是永远不会返回`Async::NotReady`，除非函数实现收到`Async::NotReady`本身。 在此示例中，仅当`fill_read_buf`返回`NotReady`时才返回`NotReady`，如果`TcpStream::read_buf`返回`NotReady`，则`fill_read_buf`仅返回`NotReady`。
+与往常一样，实现返回Async的函数的关键是永远不会返回Async :: NotReady，除非函数实现收到Async :: NotReady本身。 在此示例中，仅当fill_read_buf返回NotReady时才返回NotReady，如果TcpStream :: read_buf返回NotReady，则fill_read_buf仅返回NotReady。
 
 ```rust
 struct Lines {
@@ -262,11 +260,11 @@ impl Lines {
 fn main() {}
 ```
 
-调用者通过调用缓冲区对所有行进行排队。 这会将该行附加到内部`wr`缓冲区。 然后，一旦所有数据排队，调用者就会调用`poll_flush`，它会对套接字进行实际写入操作。 `poll_flush`仅在所有排队数据成功写入套接字后才返回`Ready`。
+调用者通过调用缓冲区对所有行进行排队。 这会将该行附加到内部wr缓冲区。 然后，一旦所有数据排队，调用者就会调用poll_flush，它会对套接字进行实际写入操作。 poll_flush仅在所有排队数据成功写入套接字后才返回Ready。
 
-与读取半部分类似，仅在函数实现收到`NotReady`本身时返回`NotReady`。
+与读取半部分类似，仅在函数实现收到NotReady本身时返回NotReady。
 
-`Lines`编解码器在`process`函数中使用如下：
+Lines编解码器在进程函数中使用如下：
 
 ```rust
 fn process(socket: TcpStream, state: Arc<Mutex<Shared>>) {
@@ -310,7 +308,7 @@ fn process(socket: TcpStream, state: Arc<Mutex<Shared>>) {
 * 在其消息通道上接收消息并将其写入套接字。
 * 从套接字接收消息并将其广播给所有 `Peer`。
 
-完全使用组合器实现此逻辑也是可能的，但需要使用拆分，但尚未涉及。 此外，这提供了一个机会，可以看到如何手动实现一个有一定份量的 `future`。
+完全使用组合器实现此逻辑也是可能的，但需要使用拆分，但尚未涉及。 此外，这提供了一个机会，可以看到如何手动实现一个非平凡的 `future`。
 
 以下是处理连接的广播逻辑的 `future`定义：
 
@@ -369,7 +367,7 @@ impl Peer {
 }
 ```
 
-为其他 `Peer`创建[mpsc](https://docs.rs/futures/0.1/futures/sync/mpsc/index.html)通道，以将其消息发送到此新创建的 `Peer`。 在创建信道之后，将发送半部分插入 `Peer`映射中。 此条目在Peer的drop实现中删除。
+为其他 `Peer`创建mpsc通道，以将其消息发送到此新创建的 `Peer`。 在创建信道之后，将发送半部分插入 `Peer`映射中。 此条目在Peer的drop实现中删除。
 
 ```rust
 impl Drop for Peer {
@@ -452,9 +450,8 @@ impl Future for Peer {
     }
 }
 ```
-## 最后的处理
 
-剩下的就是连接刚刚实现的Peer `future`。 为此，将客户端连接任务（在`process`函数中定义）扩展为使用Peer。
+剩下的就是连接刚刚实施的Peer `future`。 为此，将客户端连接任务（在`process`函数中定义）扩展为使用Peer。
 
 ```rust
 let connection = lines.into_future()
@@ -505,8 +502,6 @@ let connection = lines.into_future()
     });
 ```
 
-除了添加Peer之外，还会处理`name == None`。 在这种情况下，远程客户端在识别自身之前终止。
+除了添加Peer之外，还会处理name == None。 在这种情况下，远程客户端在识别自身之前终止。
 
-返回多个 `future`（`name == None` handler和 `Peer`）通过将返回的 `future`包装在[Either](https://docs.rs/futures/0.1/futures/future/enum.Either.html)中来处理。 要么是枚举，要为每个变体接受不同的 `future`类型。 这允许返回多个 `future`类型而不到达`trait`对象。
-
-完整的代码在[这里](https://github.com/tokio-rs/tokio/blob/master/examples/chat.rs)可以找到
+返回多个 `future`（`name == None` handler和 `Peer`）通过将返回的 `future`包装在Either中来处理。 要么是枚举，要为每个变体接受不同的 `future`类型。 这允许返回多个 `future`类型而不到达`trait`对象。

@@ -1,10 +1,10 @@
 # 任务
 
-任务是应用程序的“逻辑单元”。 它们类似于Go的goroutine和Erlang的进程，但是是异步的。 换句话说，任务是异步的绿色线程。
+任务是应用程序的“逻辑单元”。 它们类似于Go的goroutine和Erlang的进程，但是异步。 换句话说，任务是异步绿色线程。
 
-鉴于任务运行异步逻辑位，它们由[Future](https://docs.rs/futures/0.1/futures/future/trait.Future.html)表示表示。 任务完成处理后，任务的`future`实现将以（）为值返回。
+鉴于任务运行异步逻辑位，它们由Future特征表示。 任务完成处理后，任务的`future`实现将以（）值完成。
 
-任务被传递给执行程序，执行程序处理任务的调度。 执行程序通常在一组或一组线程中调度许多任务。 **任务不得执行计算繁重的逻辑，否则将阻止其他任务执行** 。 因此，不要尝试将斐波那契序列这样的计算作为任务。
+任务被传递给执行程序，执行程序处理任务的调度。 执行程序通常在一组或一组线程中调度许多任务。 **任务不得执行计算繁重的逻辑，否则将阻止其他任务执行** 。 因此，不要尝试将斐波那契序列计算为任务。
 
 任务通过直接实施Future特征或通过使用`future`和tokio crate中可用的各种组合函数构建`future`来实现。
 
@@ -113,8 +113,8 @@ my_executor.spawn(task);
 
 `future`包提供了一个同步模块，其中包含一些适合跨任务传递消息的通道类型。
 
-* [oneshot](https://docs.rs/futures/0.1/futures/sync/oneshot/index.html)是一个用于发送一个值的通道。
-* [mpsc](https://docs.rs/futures/0.1/futures/sync/mpsc/index.html)是用于发送许多（零个或多个）值的通道。
+* oneshot是一个用于发送一个值的通道。
+* mpsc是用于发送许多（零个或多个）值的通道。
 
 前面的例子并不完全正确。 鉴于任务同时执行，无法保证缓存更新任务在其他任务尝试从缓存中读取时将第一个值写入缓存。
 
@@ -212,10 +212,10 @@ impl Future for Server {
 
 通知发生在任务级别。 该任务不知道哪个子`future`触发了通知。 因此，无论何时轮询任务，都必须尝试轮询所有子`future`。
 
-![task](https://raw.githubusercontent.com/rustlang-cn/sundries/master/imgs/task-layout.png)
+![task](../../../static/imgs/task-layout.png)
 
 在此任务中，有三个子`future`可以进行轮询。 如果其中一个子`future`所包含的资源转为“就绪”，则任务本身会收到通知，并会尝试轮询其所有三个子`future`。 其中一个将推进，这反过来推进任务的内部状态。
 
-关键是尽量保持小任务，尽可能少地完成每项任务。 这就是为什么服务器为每个连接生成新任务而不是在与侦听器相同的任务中处理连接的原因。
+关键是尽量减少任务，尽可能少地完成每项任务。 这就是为什么服务器为每个连接生成新任务而不是在与侦听器相同的任务中处理连接的原因。
 
-好吧，实际上有一种方法可以让任务知道哪个子`future`使用[FuturesUnordered](https://docs.rs/futures/0.1/futures/stream/futures_unordered/struct.FuturesUnordered.html)触发了通知，但通常正确的做法是生成一个新任务。
+好吧，实际上有一种方法可以让任务知道哪个子`future`使用FuturesUnordered触发了通知，但通常正确的做法是生成一个新任务。
