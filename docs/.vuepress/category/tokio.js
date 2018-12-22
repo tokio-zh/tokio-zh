@@ -12,20 +12,6 @@ exports.tokio = (title) => {
         ]
       },
       {
-        title: '使用 Future',
-        collapsable: false,
-        children: [
-          'futures/overview',
-            'futures/basic',
-            'futures/getting_asynchronous',
-            'futures/combinators',
-            'futures/streams',
-            'futures/spawning',
-            'futures/leaf-futures'
-          
-        ]
-      },
-      {
         title: 'Tokio与I/O',
         collapsable: false,
         children: [
@@ -37,7 +23,17 @@ exports.tokio = (title) => {
           'io/datagrams'
         ]
       },
-      
+      {
+        title: 'Futures-Streams-Sinks',
+        collapsable: false,
+        children: [
+          'futures-streams-sinks/overview',
+          'futures-streams-sinks/futures',
+          'futures-streams-sinks/streams',
+          'futures-streams-sinks/sink',
+          'futures-streams-sinks/putting-it-together.md'
+        ]
+      },
       {
         title: '深入',
         collapsable: false,
