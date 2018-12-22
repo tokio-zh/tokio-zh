@@ -24,14 +24,17 @@ exports.tokio = (title) => {
         ]
       },
       {
-        title: 'Futures-Streams-Sinks',
+        title: '使用 Future',
         collapsable: false,
         children: [
-          'futures-streams-sinks/overview',
-          'futures-streams-sinks/futures',
-          'futures-streams-sinks/streams',
-          'futures-streams-sinks/sink',
-          'futures-streams-sinks/putting-it-together.md'
+          'futures/overview',
+            'futures/basic',
+            'futures/getting_asynchronous',
+            'futures/combinators',
+            'futures/streams',
+            'futures/spawning',
+            'futures/leaf-futures'
+          
         ]
       },
       {
