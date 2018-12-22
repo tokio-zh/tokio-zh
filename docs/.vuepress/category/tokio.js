@@ -12,18 +12,6 @@ exports.tokio = (title) => {
         ]
       },
       {
-        title: 'Tokio与I/O',
-        collapsable: false,
-        children: [
-          'io/overview',
-          'io/reading_writing_data',
-          'io/poll',
-          'io/async_read_write',
-          'io/filesystem',
-          'io/datagrams'
-        ]
-      },
-      {
         title: '使用 Future',
         collapsable: false,
         children: [
@@ -37,6 +25,19 @@ exports.tokio = (title) => {
           
         ]
       },
+      {
+        title: 'Tokio与I/O',
+        collapsable: false,
+        children: [
+          'io/overview',
+          'io/reading_writing_data',
+          'io/poll',
+          'io/async_read_write',
+          'io/filesystem',
+          'io/datagrams'
+        ]
+      },
+      
       {
         title: '深入',
         collapsable: false,
