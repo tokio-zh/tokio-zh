@@ -16,13 +16,21 @@
     color: #7B463D !important;
 }
 
-@media only screen and (min-width: 421px) and (max-width: 603px) {
-    .front {
-        max-height: 625px;
-    }
-}
 @media (max-width: 420px) {
     .front {
-        max-height: 480px;
+        max-height: 560px;
+    }
+    .content div[class*="language-"] {
+        margin: 0.2rem;
+    }
+}
+@media (min-width: 420px) and (max-width: 607px) {
+    .front {
+        max-height: 730px;
+    }
+}  
+@media (min-width: 608px) and (max-width: 768px) {
+    .front {
+        max-height: 700px;
     }
 }
