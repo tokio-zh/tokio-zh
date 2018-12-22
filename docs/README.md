@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: https://tokio.rs/img/Tokio_Mark_Large.png
+heroImage: /imgs/tokio.png
 pageClass: front
 actionText: QQ群570065685
 actionLink: /document/
