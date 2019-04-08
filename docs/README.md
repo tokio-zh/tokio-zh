@@ -2,7 +2,7 @@
 home: true
 heroImage: /imgs/tokio.png
 pageClass: front
-actionText: QQ群570065685
+actionText: 开始
 actionLink: /document/
 ---
 
@@ -53,8 +53,7 @@ actionLink: /document/
     <a href="https://twitter.com/tokio_rs" target="_black">Twitter</a>&emsp;
     <a href="https://github.com/tokio-rs/tokio/tree/master/examples" target="_black">示例</a>&emsp;
     <a href="https://tokio-zh.github.io/document" target="_black">概括</a>&emsp;
-    <a href="https://github.com/tokio-zh" target="_black">中文GitHub</a>&emsp;
-    <a href="#">QQ群570065685</a>
+    <a href="https://rustlang-cn.org/" target="_black">Rust中文</a>&emsp;
 </div>
 
 <p>Tokio是由我们的@carllerche和贡献者所有的爱和帮助下构建的</p>
