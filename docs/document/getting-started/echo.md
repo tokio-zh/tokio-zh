@@ -121,6 +121,6 @@ let server = listener.incoming().for_each(|socket| {
 
 如您所见，我们已将`socket`流拆分为可读写部分。 然后我们使用`io :: copy`从`reader`读取并写入`writer`。 我们使用`then` 组合器来查看`amount`未来的`Item`和`Error`作为`Result`打印一些诊断。
 
-对tokio::spawn](https://docs.rs/tokio-executor/0.1/tokio_executor/fn.spawn.html)的调用是关键所在。 至关重要的是我们希望所有`clients`同时取得进展，而不是在完成另一个`client`时阻止其中一个。 为此，我们使用`tokio :: spawn`函数在后台执行工作。
+对[tokio::spawn](https://docs.rs/tokio-executor/0.1/tokio_executor/fn.spawn.html)的调用是关键所在。 至关重要的是我们希望所有`clients`同时取得进展，而不是在完成另一个`client`时阻止其中一个。 为此，我们使用`tokio :: spawn`函数在后台执行工作。
 
 如果我们没有这样做，那么`for_each`中块的每次调用都会在一次解决，这意味着我们永远不会同时处理两个客户端连接！
