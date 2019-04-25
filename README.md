@@ -1,5 +1,7 @@
 # Tokio中文 [![Build Status](https://travis-ci.org/tokio-zh/tokio-zh.svg?branch=master)](https://travis-ci.org/tokio-zh/tokio-zh)
 
+> 该仓库已经合并到[Rust中文](https://github.com/rustlang-cn/rustlang-cn/tree/master/docs/crates/tokio)
+
 ## 修改文件：
 
 **如果你只想修改文件，不用操作下面添加文件的步骤，你可以修改docs目录内的任何md文件**
