@@ -81,7 +81,7 @@ track_response_success(response_is_ok);
 
 ## 基于轮询模型的`Future`
 
-如前所述，Rust`Future`基于轮询模型。 这意味着，这意味着， Future一旦完成后，它不会负责将数据推送到某个地方，而是依赖于被询问它是否完成。
+如前所述，Rust`Future`基于轮询模型。 这意味着， Future一旦完成后，它不会负责将数据推送到某个地方，而是依赖于被询问它是否完成。
 
 这是Rust`futures`库的一个独特方面。 其他编程语言的大多数`Future`库使用基于推送的模型，其中回调被提供给`Future`，并且计算立即使用计算结果调用回调。
 
