@@ -2,7 +2,7 @@
 home: true
 heroImage: /imgs/tokio.png
 pageClass: front
-actionText: 开始
+actionText: 已并入Rust中文-> GO
 actionLink: /document/
 ---
 
