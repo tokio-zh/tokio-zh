@@ -31,7 +31,7 @@ module.exports = {
           { text: '文档', link: '/document/' },
           { text: '社区', link: '/community/' },
           { text: '博客', link: '/blog/' },
-          { text: 'Rust中文社区', link: 'https://rustlang-cn.org/' },
+          { text: 'Rust中文', link: 'https://rustlang-cn.org/' },
           { text: '英文', link: 'https://tokio.rs' }
         ],
         sidebar: {
