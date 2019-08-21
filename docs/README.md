@@ -3,7 +3,7 @@ home: true
 heroImage: /imgs/tokio.png
 pageClass: front
 actionText: 已并入Rust中文-> GO
-actionLink: /document/
+actionLink: https://rustlang-cn.org/crates/tokio
 ---
 
 <div class="features">
