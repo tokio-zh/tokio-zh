@@ -82,10 +82,10 @@ let hello_world = TcpStream::connect(&addr).and_then(|stream| {
 回到`TcpStream::connect(addr).and_then`块。
 
 ```rust
-let client = TcpStream::connect(&addr).and_then(|stream| {
+let client = TcpStream::connect(&addr).and_then(|stream_result| {
     println!("created stream");
 
-    io::write_all(stream, "hello world\n").then(|result| {
+    io::write_all(stream_result.unwrap(), "hello world\n").then(|result| {
       println!("wrote to stream; success={:?}", result.is_ok());
       Ok(())
     })
