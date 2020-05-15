@@ -1,6 +1,6 @@
 # 一个伟大的2018年，甚至更好的2019年
 
-一年前，`Tokio`是一个非常不同的图书馆。它包括（现已弃用） `tokio-core`，它在单个库中提供了`future`的执行程序，`I / O`选择器和基本`TCP / UDP`类型。tokio-proto也包括在内，但我们不会谈论这个问题。在过去的一年中，Tokio已经发展成为Rust的异步I/O平台。它已通过几个数量的[大型](https://github.com/firecracker-microvm/firecracker), [企业](https://github.com/Azure/iotedge)建立的[应用程序](https://github.com/tikv/tikv)。
+一年前，`Tokio`是一个非常不同的库。它包括（现已弃用） `tokio-core`，它在单个库中提供了`future`的执行程序，`I / O`选择器和基本`TCP / UDP`类型。tokio-proto也包括在内，但我们不会谈论这个问题。在过去的一年中，Tokio已经发展成为Rust的异步I/O平台。它已通过几个数量的[大型](https://github.com/firecracker-microvm/firecracker), [企业](https://github.com/Azure/iotedge)建立的[应用程序](https://github.com/tikv/tikv)。
 
 2018年实现了很多。一些亮点包括：
 
